@@ -22,20 +22,12 @@ async function main() {
             return num;
         })();
         console.log(listLength);
-
-
-        for (let i = 1; i <= 299; i++) {
-            (async () => {
+        (async () => {
+            for (let i = 1; i <= 100; i++) {
                 let page = await browser.newPage();
-                //page.waitForSelector('#main > div > div > div.widget-body > div.items', { visible: true });
                 await page.goto(`https://www4.9anime.is/az-list?page=${i}`, { waituntil: 'domcontentload' });
                 let mini = await page.evaluate((arg) => {
                     let x = [];
-                    /*
-                    let $ = cheerio.load(page.content());
-                    let items = $('#main > div > div > div.widget-body > div.items').children().each((index, value) => {
-                        x.append(value.html());
-                    });*/
                     let children = document.querySelector('#main > div > div > div.widget-body > div.items').children;
                     for (let c = 0; c < children; c++) {
                         x.append(children[c].innerHTML);
@@ -44,8 +36,24 @@ async function main() {
                 });
                 list[i] = mini;
                 page.close();
-            })();
-        }
+            }
+        })();
+        (async () => {
+            for (let i = 100; i <= 299; i++) {
+                let page = await browser.newPage();
+                await page.goto(`https://www4.9anime.is/az-list?page=${i}`, { waituntil: 'domcontentload' });
+                let mini = await page.evaluate((arg) => {
+                    let x = [];
+                    let children = document.querySelector('#main > div > div > div.widget-body > div.items').children;
+                    for (let c = 0; c < children; c++) {
+                        x.append(children[c].innerHTML);
+                    }
+                    return x;
+                });
+                list[i] = mini;
+                page.close();
+            }
+        })();
         /*
         async function getItems(p) {
             let page = await browser.newPage();
