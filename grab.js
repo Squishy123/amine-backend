@@ -130,6 +130,7 @@ async function loadChunk(browser, chunk, num) {
                 console.log(`Error limit passed: Chunk ${num} error at : ${chunk[i]}`)
                 jsonfile.writeFileSync('errlog.json', chunk[i], {flag: 'a'});
             }
+            return;
         })(3);
     }
     console.log(`Chunk ${num} completed`)
@@ -144,7 +145,7 @@ async function loadChunk(browser, chunk, num) {
         //executablePath: "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
     });
     let page = await browser.newPage();
-    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/one-piece.ov8/83ox3q')
+    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/sword-art-online-ii.6y0/j6mkq8')
     console.log("Completed Source Link Scrape")
     page.close();
 
@@ -161,8 +162,8 @@ async function loadChunk(browser, chunk, num) {
     });*/
     let promises = [];
     chunks.forEach((e, i) => {
-        console.log(`Loaded Chunk ${i} of ${chunks.length}`)
-        promises.push(loadChunk(browser, e, i));
+        console.log(`Loaded Chunk ${i+1} of ${chunks.length}`)
+        promises.push(loadChunk(browser, e, i+1));
     });
     let files = await Promise.all(promises);
     //let files = await loadChunk(sources[0].sourceList)
