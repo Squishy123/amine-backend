@@ -108,7 +108,7 @@ async function getSourceLinks(page, url) {
 async function grabLink(browser, url) {
     let p = await browser.newPage();
     let player = await getRapidVideoPlayer(p, url);
-    let file = await getRapidVideoFile(p, `${player}&q=1080p`);
+    let file = await getRapidVideoFile(p, `${player}&q=720p`);
     await p.close();
     return file
 }
@@ -117,11 +117,21 @@ async function loadChunk(browser, chunk, num) {
     let data = []
     for (let i = 0; i < chunk.length; i++) {
         let file = await grabLink(browser, chunk[i]);
+        if (file) {
+            data.push(file);
+        } else {
+            console.log(`Error limit passed: Chunk ${num} error at : ${chunk[i]}`)
+            jsonfile.writeFileSync('errlog.json', chunk[i], { flag: 'a' });
+        }
+        console.log(`${i / chunk.length * 100}% of chunk ${num} completed`)
+        jsonfile.writeFileSync('raw.json', file, { flag: 'a' });
+        /** 
         await (async function checkFile(errCheck) {
             if (errCheck > 0) {
                 if (file) {
                     data.push(file);
                     if (file) console.log(`${i / chunk.length * 100}% of chunk ${num} completed`)
+                    jsonfile.writeFileSync('raw.json', file, {flag: 'a'});
                 } else {
                     file = await grabLink(browser, chunk[i]);
                     await checkFile(errCheck--);
@@ -130,8 +140,7 @@ async function loadChunk(browser, chunk, num) {
                 console.log(`Error limit passed: Chunk ${num} error at : ${chunk[i]}`)
                 jsonfile.writeFileSync('errlog.json', chunk[i], {flag: 'a'});
             }
-            return;
-        })(3);
+        })(3);*/
     }
     console.log(`Chunk ${num} completed`)
     return data;
@@ -145,7 +154,7 @@ async function loadChunk(browser, chunk, num) {
         //executablePath: "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
     });
     let page = await browser.newPage();
-    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/sword-art-online-ii.6y0/j6mkq8')
+    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/dragon-ball-super.7jly/k4j9nr')
     console.log("Completed Source Link Scrape")
     page.close();
 
@@ -162,8 +171,8 @@ async function loadChunk(browser, chunk, num) {
     });*/
     let promises = [];
     chunks.forEach((e, i) => {
-        console.log(`Loaded Chunk ${i+1} of ${chunks.length}`)
-        promises.push(loadChunk(browser, e, i+1));
+        console.log(`Loaded Chunk ${i + 1} of ${chunks.length}`)
+        promises.push(loadChunk(browser, e, i + 1));
     });
     let files = await Promise.all(promises);
     //let files = await loadChunk(sources[0].sourceList)
