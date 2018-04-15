@@ -105,18 +105,34 @@ async function getSourceLinks(page, url) {
 
     return sources;
 }
+async function grabLink(browser, url) {
+    let p = await browser.newPage();
+    let player = await getRapidVideoPlayer(p, url);
+    let file = await getRapidVideoFile(p, `${player}&q=1080p`);
+    await p.close();
+    return file
+}
 
-async function loadChunk(browser, chunk, i) {
+async function loadChunk(browser, chunk, num) {
     let data = []
     for (let i = 0; i < chunk.length; i++) {
-        let p = await browser.newPage();
-        let player = await getRapidVideoPlayer(p, chunk[i]);
-        let file = await getRapidVideoFile(p, `${player}&q=1080p`);
-        data.push(file);
-        //console.log(`${file}`);
-        await p.close();
+        let file = await grabLink(browser, chunk[i]);
+        await (async function checkFile(errCheck) {
+            if (errCheck > 0) {
+                if (file) {
+                    data.push(file);
+                    if (file) console.log(`${i / chunk.length * 100}% of chunk ${num} completed`)
+                } else {
+                    file = await grabLink(browser, chunk[i]);
+                    await checkFile(errCheck--);
+                }
+            } else {
+                console.log(`Error limit passed: Chunk ${num} error at : ${chunk[i]}`)
+                jsonfile.writeFileSync('errlog.json', chunk[i], {flag: 'a'});
+            }
+        })(3);
     }
-    console.log(`Chunk ${i} completed`)
+    console.log(`Chunk ${num} completed`)
     return data;
 }
 
@@ -128,9 +144,8 @@ async function loadChunk(browser, chunk, i) {
         //executablePath: "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
     });
     let page = await browser.newPage();
-    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/one-piece.ov8/83ox3q').then(() => {
-        console.log("Completed Source Link Scrape")
-    });
+    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/one-piece.ov8/83ox3q')
+    console.log("Completed Source Link Scrape")
     page.close();
 
     let chunks = ((arr, chunkSize) => {
@@ -139,15 +154,15 @@ async function loadChunk(browser, chunk, i) {
             results.push(arr.splice(0, chunkSize))
         }
         return results;
-    })(sources[0].sourceList, Math.ceil(sources[0].sourceList/5));
+    })(sources[0].sourceList, Math.ceil(sources[0].sourceList.length / 5));
     /** 
     chunks.forEach(c => {
         console.log(c)
     });*/
     let promises = [];
     chunks.forEach((e, i) => {
-        promises.push(loadChunk(browser, e, i));
         console.log(`Loaded Chunk ${i} of ${chunks.length}`)
+        promises.push(loadChunk(browser, e, i));
     });
     let files = await Promise.all(promises);
     //let files = await loadChunk(sources[0].sourceList)
