@@ -106,7 +106,7 @@ async function getSourceLinks(page, url) {
     return sources;
 }
 
-async function loadChunk(browser, chunk) {
+async function loadChunk(browser, chunk, i) {
     let data = []
     for (let i = 0; i < chunk.length; i++) {
         let p = await browser.newPage();
@@ -116,6 +116,7 @@ async function loadChunk(browser, chunk) {
         //console.log(`${file}`);
         await p.close();
     }
+    console.log(`Chunk ${i} completed`)
     return data;
 }
 
@@ -127,9 +128,9 @@ async function loadChunk(browser, chunk) {
         //executablePath: "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
     });
     let page = await browser.newPage();
-    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/tokyo-ghoulre.2yx0/035qr5');
-    jsonfile.writeFileSync('sources.json', sources);
-
+    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/one-piece.ov8/83ox3q').then(() => {
+        console.log("Completed Source Link Scrape")
+    });
     page.close();
 
     let chunks = ((arr, chunkSize) => {
@@ -138,14 +139,15 @@ async function loadChunk(browser, chunk) {
             results.push(arr.splice(0, chunkSize))
         }
         return results;
-    })(sources[0].sourceList, 24);
+    })(sources[0].sourceList, Math.ceil(sources[0].sourceList/5));
     /** 
     chunks.forEach(c => {
         console.log(c)
     });*/
     let promises = [];
-    chunks.forEach((e) => {
-        promises.push(loadChunk(browser, e));
+    chunks.forEach((e, i) => {
+        promises.push(loadChunk(browser, e, i));
+        console.log(`Loaded Chunk ${i} of ${chunks.length}`)
     });
     let files = await Promise.all(promises);
     //let files = await loadChunk(sources[0].sourceList)
