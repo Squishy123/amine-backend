@@ -119,12 +119,13 @@ async function loadChunk(browser, chunk, num) {
         let file = await grabLink(browser, chunk[i]);
         if (file) {
             data.push(file);
+            console.log(`${i / chunk.length * 100}% of chunk ${num} completed`)
+            jsonfile.writeFileSync('raw.json', file, { flag: 'a' });
         } else {
             console.log(`Error limit passed: Chunk ${num} error at : ${chunk[i]}`)
             jsonfile.writeFileSync('errlog.json', chunk[i], { flag: 'a' });
+            return;
         }
-        console.log(`${i / chunk.length * 100}% of chunk ${num} completed`)
-        jsonfile.writeFileSync('raw.json', file, { flag: 'a' });
         /** 
         await (async function checkFile(errCheck) {
             if (errCheck > 0) {
@@ -154,7 +155,7 @@ async function loadChunk(browser, chunk, num) {
         //executablePath: "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
     });
     let page = await browser.newPage();
-    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/dragon-ball-super.7jly/k4j9nr')
+    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/one-piece.ov8/83ox3q')
     console.log("Completed Source Link Scrape")
     page.close();
 
