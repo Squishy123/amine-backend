@@ -126,22 +126,6 @@ async function loadChunk(browser, chunk, num) {
             jsonfile.writeFileSync('errlog.json', chunk[i], { flag: 'a' });
             return;
         }
-        /** 
-        await (async function checkFile(errCheck) {
-            if (errCheck > 0) {
-                if (file) {
-                    data.push(file);
-                    if (file) console.log(`${i / chunk.length * 100}% of chunk ${num} completed`)
-                    jsonfile.writeFileSync('raw.json', file, {flag: 'a'});
-                } else {
-                    file = await grabLink(browser, chunk[i]);
-                    await checkFile(errCheck--);
-                }
-            } else {
-                console.log(`Error limit passed: Chunk ${num} error at : ${chunk[i]}`)
-                jsonfile.writeFileSync('errlog.json', chunk[i], {flag: 'a'});
-            }
-        })(3);*/
     }
     console.log(`Chunk ${num} completed`)
     return data;
@@ -149,11 +133,7 @@ async function loadChunk(browser, chunk, num) {
 
 (async () => {
     let start = new Date();
-    let browser = await puppeteer.launch({
-        headless: true
-        //args: ["--disable-web-security"]
-        //executablePath: "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
-    });
+    let browser = await puppeteer.launch();
     let page = await browser.newPage();
     let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/one-piece.ov8/83ox3q')
     console.log("Completed Source Link Scrape")
@@ -166,22 +146,13 @@ async function loadChunk(browser, chunk, num) {
         }
         return results;
     })(sources[0].sourceList, Math.ceil(sources[0].sourceList.length / 5));
-    /** 
-    chunks.forEach(c => {
-        console.log(c)
-    });*/
     let promises = [];
     chunks.forEach((e, i) => {
         console.log(`Loaded Chunk ${i + 1} of ${chunks.length}`)
         promises.push(loadChunk(browser, e, i + 1));
     });
     let files = await Promise.all(promises);
-    //let files = await loadChunk(sources[0].sourceList)
     jsonfile.writeFileSync('files.json', [].concat(...files));
-    // jsonfile.writeFileSync('files.json', files);
-    //sources[0].forEach
-
-    // console.log(file);
     browser.close();
     console.log(`Execution Time: ${new Date() - start}`);
 })();
