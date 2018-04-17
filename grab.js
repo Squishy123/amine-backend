@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const jsonfile = require('jsonfile');
+const mongo = require('mongodb')
 
 const whitelist = ["aspx",
     "axd",
@@ -108,7 +109,7 @@ async function getSourceLinks(page, url) {
 async function grabLink(browser, url) {
     let p = await browser.newPage();
     let player = await getRapidVideoPlayer(p, url);
-    let file = await getRapidVideoFile(p, `${player}&q=720p`);
+    let file = await getRapidVideoFile(p, `${player}`);
     await p.close();
     return file
 }
@@ -135,7 +136,7 @@ async function loadChunk(browser, chunk, num) {
     let start = new Date();
     let browser = await puppeteer.launch();
     let page = await browser.newPage();
-    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/one-piece.ov8/83ox3q')
+    let sources = await getSourceLinks(page, 'https://www4.9anime.is/watch/one-punch-man.928/q2w2rw')
     console.log("Completed Source Link Scrape")
     page.close();
 
@@ -145,7 +146,7 @@ async function loadChunk(browser, chunk, num) {
             results.push(arr.splice(0, chunkSize))
         }
         return results;
-    })(sources[0].sourceList, Math.ceil(sources[0].sourceList.length / 5));
+    })(sources[0].sourceList, Math.ceil(sources[0].sourceList.length / 10));
     let promises = [];
     chunks.forEach((e, i) => {
         console.log(`Loaded Chunk ${i + 1} of ${chunks.length}`)
