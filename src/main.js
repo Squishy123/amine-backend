@@ -13,7 +13,7 @@ const db = require('./lib/database.js');
     let page = await browser.newPage();
 
 
-    let sources = await anime.getSourceLinks(page, 'https://www4.9anime.is/watch/one-punch-man.928/q2w2rw')
+    let sources = await anime.getSourceLinks(page, 'https://www4.9anime.is/watch/dragon-ball-super.7jly/k4j9nr')
     console.log("Completed Source Link Scrape")
     page.close();
 
@@ -34,7 +34,7 @@ const db = require('./lib/database.js');
     jsonfile.writeFileSync('../tmp/data.json', [].concat(...files), {flag: 'w'});
     browser.close();
 
-    db.addAnime({Title: "One Punch Man", Eps: [].concat(...files)});
+    db.addAnime({Title: "Dragon Ball Super", Eps: [].concat(...files)});
 
     console.log(`Execution Time: ${new Date() - start}`);
 })();
