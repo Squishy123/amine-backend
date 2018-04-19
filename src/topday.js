@@ -55,12 +55,18 @@ const Source = require('./schemas/sourceSchema.js');
                     console.log(`Loaded Chunk ${i + 1} of ${chunks.length}`)
                     promises.push(anime.loadChunk(browser, e, i + 1));
                 });
+
                 let files = await Promise.all(promises);
                 console.log(files);
-               // jsonfile.writeFileSync('../tmp/data.json', [].concat(...files), { flag: 'w' });
+                //jsonfile.writeFileSync('../tmp/data.json', [].concat([].concat(...files)), { flag: 'w' });
                 let episodes = [].concat(...files);
                 episodes = episodes.map(url => {
-                    return new Episode({sources: [new Source({url: url})]})
+                    let sources = [];
+                    if(url[0]) sources.push(new Source({url: url[0], quality: "360p"}))
+                    if(url[1]) sources.push(new Source({url: url[1], quality: "480p"}))
+                    if(url[2]) sources.push(new Source({url: url[2], quality: "720p"}))
+                    if(url[3]) sources.push(new Source({url: url[3], quality: "1080p"}))
+                    return new Episode({sources: sources})
                 })
                 db.addAnime(new Anime({title: title, episodes: episodes}));
             })());

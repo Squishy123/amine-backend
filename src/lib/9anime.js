@@ -97,10 +97,10 @@ module.exports = {
 
         return sources;
     },
-    grabLink: async function (browser, url) {
+    grabLink: async function (browser, url, query) {
         let p = await browser.newPage();
         let player = await this.getRapidVideoPlayer(p, url);
-        let file = await this.getRapidVideoFile(p, `${player}`);
+        let file = await this.getRapidVideoFile(p, `${player}${query}`);
         await p.close();
         return file
     }
@@ -108,7 +108,11 @@ module.exports = {
     loadChunk: async function (browser, chunk, num) {
         let data = []
         for (let i = 0; i < chunk.length; i++) {
-            let file = await this.grabLink(browser, chunk[i]);
+            let file = [];
+            file[0] = await this.grabLink(browser, chunk[i], '&q=360p');
+            file[1] = await this.grabLink(browser, chunk[i], '&q=480p');
+            file[2] = await this.grabLink(browser, chunk[i], '&q=720p');
+            file[3] = await this.grabLink(browser, chunk[i], '&q=1080p');
             if (file) {
                 data.push(file);
                 console.log(`${i / chunk.length * 100}% of chunk ${num} completed`)
