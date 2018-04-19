@@ -17,11 +17,9 @@
   },
   "homepage": "https://github.com/Squishy123/amine#readme",
   "dependencies": {
-    "async": "^2.6.0",
-    "cheerio": "^1.0.0-rc.2",
-    "jest": "^22.4.3",
     "jsonfile": "^4.0.0",
     "mongodb": "^3.0.6",
+    "mongoose": "^5.0.15",
     "puppeteer": "^1.2.0"
   }
 }

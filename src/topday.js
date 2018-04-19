@@ -7,6 +7,11 @@ const anime = require('./lib/9anime.js');
 //database
 const db = require('./lib/database.js');
 
+//schemas
+const Anime = require('./schemas/animeSchema.js');
+const Episode = require('./schemas/episodeSchema.js');
+const Source = require('./schemas/sourceSchema.js');
+
 (async () => {
     let start = new Date();
     let browser = await puppeteer.launch();
@@ -33,6 +38,9 @@ const db = require('./lib/database.js');
                 let p = await browser.newPage();
                 let sources = await anime.getSourceLinks(p, e)
                 console.log("Completed Source Link Scrape")
+                let title = await p.evaluate(() => {
+                   return document.querySelector('#main > div > div.widget.player > div.widget-title > h1').innerHTML;
+                });
                 p.close();
 
                 let chunks = ((arr, chunkSize) => {
@@ -49,9 +57,12 @@ const db = require('./lib/database.js');
                 });
                 let files = await Promise.all(promises);
                 console.log(files);
-                jsonfile.writeFileSync('../tmp/data.json', [].concat(...files), { flag: 'w' });
-
-                db.addAnime({ Title: e, Eps: [].concat(...files) });
+               // jsonfile.writeFileSync('../tmp/data.json', [].concat(...files), { flag: 'w' });
+                let episodes = [].concat(...files);
+                episodes = episodes.map(url => {
+                    return new Episode({sources: [new Source({url: url})]})
+                })
+                db.addAnime(new Anime({title: title, episodes: episodes}));
             })());
     });
 
