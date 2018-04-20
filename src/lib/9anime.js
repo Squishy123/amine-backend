@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const jsonfile = require('jsonfile');
 
 const properties = require('./properties.js');
 const whitelist = properties.whitelist;
@@ -102,7 +101,7 @@ module.exports = {
         let player = await this.getRapidVideoPlayer(p, url);
         let file = await this.getRapidVideoFile(p, `${player}${query}`);
         await p.close();
-        return file
+        return {rapidvideo: url, url: file}
     }
     ,
     loadChunk: async function (browser, chunk, num) {

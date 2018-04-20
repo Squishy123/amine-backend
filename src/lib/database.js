@@ -4,14 +4,16 @@ const Anime = require('../schemas/animeSchema.js');
 
 module.exports = {
     addAnime: function (...anime) {
-        mongoose.connect(url);
-        anime.forEach((a) => {
-            a.save((err) => {
+    (async() => {
+        await mongoose.connect(url);
+        await anime.forEach(async (a) => {
+            await a.save((err) => {
                 if (err) throw err;
                 console.log("Anime saved successfully")
             })
         });
-        mongoose.disconnect();
+           //mongoose.disconnect();
+    })();
     },
     removeAnime: function (...obj) {
         client.connect(url, (err, db) => {

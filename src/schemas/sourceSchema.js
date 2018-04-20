@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 let SourceSchema = new mongoose.Schema({
+    rapidvideo: String,
     url: String,
     quality: {
         type:[{
