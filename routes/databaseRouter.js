@@ -25,7 +25,7 @@ function lookupAnime(req, res, next) {
 
 }
 
-router.get('/:animetitle', lookupAnime, (req, res) => {
+router.get('/search/title/:animetitle', lookupAnime, (req, res) => {
     res.status(200).send(req.results);
 })
 
