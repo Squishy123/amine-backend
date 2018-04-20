@@ -11,6 +11,7 @@ module.exports = {
                 console.log("Anime saved successfully")
             })
         });
+        mongoose.disconnect();
     },
     removeAnime: function (...obj) {
         client.connect(url, (err, db) => {

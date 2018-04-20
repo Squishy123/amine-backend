@@ -19,14 +19,15 @@ const Source = require('./schemas/sourceSchema.js');
 
     await page.goto('https://www4.9anime.is/');
     try {
-        await page.waitForSelector('#sidebar > div.widget.ranking > div.widget-body > div:nth-child(1)');
+        await page.waitForSelector('#sidebar > div.widget.ranking > div.widget-body > div:nth-child(3)');
     } catch (err) { }
 
     let list = await page.evaluate(() => {
         let items = [];
-        let range = document.querySelector('#sidebar > div.widget.ranking > div.widget-body > div:nth-child(1)').children.length;
+        //day=1 week=2 month = 3
+        let range = document.querySelector('#sidebar > div.widget.ranking > div.widget-body > div:nth-child(3)').children.length;
         for (let i = 1; i <= range; i++) {
-            items.push(document.querySelector(`#sidebar > div.widget.ranking > div.widget-body > div:nth-child(1) > div:nth-child(${i}) > a`).href)
+            items.push(document.querySelector(`#sidebar > div.widget.ranking > div.widget-body > div:nth-child(3) > div:nth-child(${i}) > a`).href)
         }
         return items;
     });
