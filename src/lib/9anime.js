@@ -1,5 +1,12 @@
 const puppeteer = require('puppeteer');
 
+const db = require('./database.js');
+
+//schemas
+const Anime = require('../schemas/animeSchema.js');
+const Episode = require('../schemas/episodeSchema.js');
+const Source = require('../schemas/sourceSchema.js');
+
 const properties = require('./properties.js');
 const whitelist = properties.whitelist;
 const blacklist = properties.blacklist;
@@ -101,7 +108,7 @@ module.exports = {
         let player = await this.getRapidVideoPlayer(p, url);
         let file = await this.getRapidVideoFile(p, `${player}${query}`);
         await p.close();
-        return {rapidvideo: url, url: file}
+        return { rapidvideo: player, url: file, quality: query}
     }
     ,
     loadChunk: async function (browser, chunk, num) {
@@ -124,5 +131,31 @@ module.exports = {
         }
         console.log(`Chunk ${num} completed`)
         return data;
+    },
+    //Adds the chunk to a database
+    addChunk: async function (browser, chunk, num, anime) {
+        for (let i = 0; i < chunk.length; i++) {
+            let file = [];
+            file[0] = await this.grabLink(browser, chunk[i], '&q=360p');
+            file[1] = await this.grabLink(browser, chunk[i], '&q=480p');
+            file[2] = await this.grabLink(browser, chunk[i], '&q=720p');
+            file[3] = await this.grabLink(browser, chunk[i], '&q=1080p');
+            if (file) {
+                let sources = [];
+                file.forEach((link) => {
+                    if (link) sources.push(new Source({ rapidvideo: link.rapidvideo, url: link.url, quality: link.quality }))
+                });
+                let ep = new Episode({ sources: sources })
+                await Anime.findOneAndUpdate({ _id: anime._id }, { $addToSet: { episodes: ep } }, (err) => {
+                    if (err) console.log(err);
+                    console.log("Success!")
+                });
+                console.log(`${i / chunk.length * 100}% of chunk ${num} completed`)
+            } else {
+                console.log(`Error limit passed: Chunk ${num} error at : ${chunk[i]}`)
+                return;
+            }
+        }
+        console.log(`Chunk ${num} completed`)
     }
 }

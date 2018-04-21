@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const mongoose = require('mongoose');
 
 //scrapers
 const anime = require('./lib/9anime.js');
@@ -16,13 +17,16 @@ const Source = require('./schemas/sourceSchema.js');
     let browser = await puppeteer.launch();
     let page = await browser.newPage();
 
-
     let sources = await anime.getSourceLinks(page, 'https://www4.9anime.is/watch/tokyo-ghoulre.2yx0/035qr5')
     console.log("Completed Source Link Scrape")
     let title = await page.evaluate(() => {
         return document.querySelector('#main > div > div.widget.player > div.widget-title > h1').innerHTML;
-     });
+    });
     page.close();
+
+    //anime reference
+    let a = new Anime({ title: title });
+    await db.addAnime(a);
 
     let chunks = ((arr, chunkSize) => {
         let results = [];
@@ -30,28 +34,15 @@ const Source = require('./schemas/sourceSchema.js');
             results.push(arr.splice(0, chunkSize))
         }
         return results;
-    })(sources[0].sourceList, Math.ceil(sources[0].sourceList.length / 2));
+    })(sources[0].sourceList, Math.ceil(sources[0].sourceList.length / 10));
     let promises = [];
     chunks.forEach((e, i) => {
         console.log(`Loaded Chunk ${i + 1} of ${chunks.length}`)
-        promises.push(anime.loadChunk(browser, e, i + 1));
+        promises.push(anime.addChunk(browser, e, i + 1, a));
     });
-    let files = await Promise.all(promises);
-    console.log(files);
-    
+    await Promise.all(promises).then(() => {
+        mongoose.disconnect();
+    });
     browser.close();
-    
-    //jsonfile.writeFileSync('../tmp/data.json', [].concat([].concat(...files)), { flag: 'w' });
-    let episodes = [].concat(...files);
-    episodes = episodes.map(url => {
-        let sources = [];
-        if(url[0]) sources.push(new Source({rapidvideo: url[0].rapidvideo, url: url[0].url, quality: "360p"}))
-        if (url[1]) sources.push(new Source({ rapidvideo: url[1].rapidvideo, url: url[1].url, quality: "480p"}))
-        if (url[2]) sources.push(new Source({ rapidvideo: url[2].rapidvideo, url: url[2].url, quality: "720p"}))
-        if (url[3]) sources.push(new Source({ rapidvideo: url[3].rapidvideo, url: url[3].url, quality: "1080p"}))
-        return new Episode({sources: sources})
-    })
-    db.addAnime(new Anime({title: title, episodes: episodes}));
-
     console.log(`Execution Time: ${new Date() - start}`);
-})();
+})()
