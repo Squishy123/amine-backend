@@ -1,7 +1,21 @@
 var express = require('express');
 let router = express.Router();
 const mongoose = require('mongoose')
+
+const puppeteer = require('puppeteer');
+//scrapers
+const anime = require('../src/lib/9anime.js');
+const main = require('../src/main.js')
+
+//database
+const db = require('../src/lib/database.js');
+
+//schemas
 const Anime = require('../src/schemas/animeSchema.js');
+const Episode = require('../src/schemas/episodeSchema.js');
+const Source = require('../src/schemas/sourceSchema.js');
+
+
 
 router.get('/', (req, res) => {
     res.status(200).send('Server Online!')
@@ -47,6 +61,18 @@ function animeList(req, res, next) {
 
 router.get('/animelist', animeList, (req, res) => {
     res.status(200).send(req.results);
+})
+
+function requestTitle(req, res, next) {
+    let title = req.params.animetitle;
+    (async () => {
+        await main.scrape(title);
+        next()
+    })()   
+}
+
+router.post('/request/title/:animetitle', requestTitle, (req, res) => {
+    res.status(200).send("Scraping...")
 })
 
 module.exports = router;
