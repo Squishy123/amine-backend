@@ -94,7 +94,7 @@ module.exports = {
                         list = document.querySelector(`#main > div > div.widget.servers > div.widget-body > div:nth-child(${p + 1}) > ul:nth-child(${r + 2})`).children;
                     }
                     for (let l = 0; l < list.length; l++) {
-                        sources[p].sourceList.push(list[l].children[0].href);
+                        sources[p].sourceList.push({href: list[l].children[0].href, index: list[l].children[0].getAttribute('data-base')});
                     }
                 }
             }
@@ -132,20 +132,21 @@ module.exports = {
         console.log(`Chunk ${num} completed`)
         return data;
     },
-    //Adds the chunk to a database
+    //Adds the chunk to a database at a index
     addChunk: async function (browser, chunk, num, anime) {
         for (let i = 0; i < chunk.length; i++) {
             let file = [];
-            file[0] = await this.grabLink(browser, chunk[i], '&q=360p');
-            file[1] = await this.grabLink(browser, chunk[i], '&q=480p');
-            file[2] = await this.grabLink(browser, chunk[i], '&q=720p');
-            file[3] = await this.grabLink(browser, chunk[i], '&q=1080p');
+            file[0] = await this.grabLink(browser, chunk[i].href, '&q=360p');
+            file[1] = await this.grabLink(browser, chunk[i].href, '&q=480p');
+            file[2] = await this.grabLink(browser, chunk[i].href, '&q=720p');
+            file[3] = await this.grabLink(browser, chunk[i].href, '&q=1080p');
             if (file) {
                 let sources = [];
                 file.forEach((link) => {
                     if (link) sources.push(new Source({ rapidvideo: link.rapidvideo, url: link.url, quality: link.quality }))
                 });
-                let ep = new Episode({ sources: sources })
+                let ep = new Episode({ id: chunk[i].index, sources: sources })
+                console.log(ep);
                 await Anime.findOneAndUpdate({ _id: anime._id }, { $addToSet: { episodes: ep } }, (err) => {
                     if (err) console.log(err);
                     console.log("Success!")

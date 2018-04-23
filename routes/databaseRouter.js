@@ -15,8 +15,6 @@ const Anime = require('../schemas/animeSchema.js');
 const Episode = require('../schemas/episodeSchema.js');
 const Source = require('../schemas/sourceSchema.js');
 
-
-
 router.get('/', (req, res) => {
     res.status(200).send('Server Online!')
 });

@@ -14,8 +14,9 @@ const Source = require('../schemas/sourceSchema.js');
 
 module.exports = {
     scrape: async function (animeTitle) {
+        await mongoose.connect("mongodb://localhost:27017/media")
         let start = new Date();
-        let browser = await puppeteer.launch();
+        let browser = await puppeteer.launch({headless: true});
         let page = await browser.newPage();
 
         //get the first item for tester
@@ -43,7 +44,7 @@ module.exports = {
                     results.push(arr.splice(0, chunkSize))
                 }
                 return results;
-            })(sources[0].sourceList, Math.ceil(sources[0].sourceList.length / 10));
+            })(sources[0].sourceList, Math.ceil(sources[0].sourceList.length / 5));
             let promises = [];
             chunks.forEach((e, i) => {
                 console.log(`Loaded Chunk ${i + 1} of ${chunks.length}`)
