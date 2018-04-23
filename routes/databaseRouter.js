@@ -4,16 +4,16 @@ const mongoose = require('mongoose')
 
 const puppeteer = require('puppeteer');
 //scrapers
-const anime = require('../src/lib/9anime.js');
-const main = require('../src/main.js')
+const anime = require('../services/9anime.js');
+const main = require('../tasks/main.js')
 
 //database
 const db = require('../src/lib/database.js');
 
 //schemas
-const Anime = require('../src/schemas/animeSchema.js');
-const Episode = require('../src/schemas/episodeSchema.js');
-const Source = require('../src/schemas/sourceSchema.js');
+const Anime = require('../schemas/animeSchema.js');
+const Episode = require('../schemas/episodeSchema.js');
+const Source = require('../schemas/sourceSchema.js');
 
 
 
@@ -66,7 +66,7 @@ router.get('/animelist', animeList, (req, res) => {
 function requestTitle(req, res, next) {
     let title = req.params.animetitle;
     (async () => {
-        await main.scrape(title);
+        main.scrape(title);
         next()
     })()   
 }

@@ -1,15 +1,15 @@
 const puppeteer = require('puppeteer');
 
 //scrapers
-const anime = require('./lib/9anime.js');
+const anime = require('../services/9anime.js');
 
 //database
-const db = require('./lib/database.js');
+const db = require('../services/database.js');
 
 //schemas
-const Anime = require('./schemas/animeSchema.js');
-const Episode = require('./schemas/episodeSchema.js');
-const Source = require('./schemas/sourceSchema.js');
+const Anime = require('../schemas/animeSchema.js');
+const Episode = require('../schemas/episodeSchema.js');
+const Source = require('../schemas/sourceSchema.js');
 
 (async () => {
     let start = new Date();
