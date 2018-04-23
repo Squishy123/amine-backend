@@ -7,7 +7,7 @@ const Anime = require('../schemas/animeSchema.js');
 const Episode = require('../schemas/episodeSchema.js');
 const Source = require('../schemas/sourceSchema.js');
 
-const properties = require('./properties.js');
+const properties = require('./scrapers/properties.js');
 const whitelist = properties.whitelist;
 const blacklist = properties.blacklist;
 
