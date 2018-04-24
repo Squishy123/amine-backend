@@ -1,7 +1,10 @@
 module.exports = {
     "blacklist": [
         "mc.yandex.ru",
-        "bebi"
+        "bebi",
+        "gif",
+        "png",
+        "jpeg"
     ],
     "whitelist": [
         "aspx",
