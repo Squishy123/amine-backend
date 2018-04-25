@@ -79,12 +79,12 @@ module.exports = {
             let sources = [];
             let servers = document.querySelector('#main > div > div.widget.servers > div.widget-body').children;
             let list;
-            for (let r = 0; r < range; r++) {
+            for (let r = 1; r <= range; r++) {
                 if (range == 1) {
-                    
                     list = document.querySelector(`#main > div > div.widget.servers > div.widget-body > div:nth-child(${2}) > ul`).children;
                 } else {
-                    list = document.querySelector(`#main > div > div.widget.servers > div.widget-body > div:nth-child(${2}) > ul:nth-child(${2})`).children;
+
+                    list = document.querySelector(`#main > div > div.widget.servers > div.widget-body > div:nth-child(${2}) > ul:nth-child(${r + 1})`).children;
                 }
                 for (let l = 0; l < list.length; l++) {
                     sources.push({ href: list[l].children[0].href, index: list[l].children[0].getAttribute('data-base') });
