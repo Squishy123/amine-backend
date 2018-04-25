@@ -13,14 +13,23 @@ const threads = 5;
      pages = Promise.all(pages);
      */
     let page = await browser.newPage();
-    let sources = await scrape.getSource(page, "https://www4.9anime.is/watch/dragon-ball-super.7jly/k4j9nr");
+    let sources = await scrape.getSource(page, "https://www4.9anime.is/watch/tokyo-ghoulre.2yx0/035qr5");
     //console.log(sources);
 
     let puppet = async.queue(async (task, callback) => {
         //console.log("queued a task")
         await task.func.apply(null, task.args)
         callback();
-    }, 5)
+    }, 2)
+
+    puppet.saturated = () => {
+        console.log("overfill")
+    }
+
+    puppet.drain = async () => {
+        console.log("All done")
+        await browser.close();
+    }
 
     await page.close();
 
@@ -32,7 +41,7 @@ const threads = 5;
         console.log(video);
         await p.close();
     }
-
+    
     async.each(sources, (s, c) => {
         console.log(s);
         puppet.push({ func: package, args: [s.href] }, () => { console.log("Completed scrape") })
