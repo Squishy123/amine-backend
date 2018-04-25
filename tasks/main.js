@@ -1,11 +1,12 @@
 const puppeteer = require('puppeteer');
 const mongoose = require('mongoose');
+const async = require('async')
 
 //scrapers
-const anime = require('../services/9anime.js');
+const anime = require('../services/scrapers/9anime.js');
 
 //database
-const db = require('../services/database.js');
+//const db = require('../services/database.js');
 
 //schemas
 const Anime = require('../schemas/animeSchema.js');
@@ -16,7 +17,7 @@ module.exports = {
     scrape: async function (animeTitle) {
         await mongoose.connect("mongodb://localhost:27017/media")
         let start = new Date();
-        let browser = await puppeteer.launch({headless: true});
+        let browser = await puppeteer.launch({ headless: true });
         let page = await browser.newPage();
 
         //get the first item for tester
@@ -56,5 +57,40 @@ module.exports = {
         }
         browser.close();
         console.log(`Execution Time: ${new Date() - start}`);
+    },
+    scrapeURL: async function (url) {
+        console.log("Started Scrape", url)
+        let start = new Date();
+        let browser = await puppeteer.launch({ headless: false });
+        const threads = 5;
+        let page = await browser.newPage();
+        let sources = await anime.getSourceLinks(page, url)
+        console.log("Completed Source Link Scrape")
+        let title = await page.evaluate(() => {
+            return document.querySelector('#main > div > div.widget.player > div.widget-title > h1').innerHTML;
+        });
+
+        let a = new Anime({ title: title });
+        await a.save((err) => { })
+        await async.eachOf(sources[0].sourceList, async function (s, i) {
+            let file = [];
+            file[0] = await anime.grabLink(page, sources[0].sourceList[i].href, '&q=360p');
+            file[1] = await anime.grabLink(page, sources[0].sourceList[i].href, '&q=480p');
+            file[2] = await anime.grabLink(page, sources[0].sourceList[i].href, '&q=720p');
+            file[3] = await anime.grabLink(page, sources[0].sourceList[i].href, '&q=1080p');
+            let so = [];
+            file.forEach((link) => {
+                so.push({ player: link.rapidvideo, url: link.url, quality: link.quality });
+            });
+            let ep = new Episode({ id: sources[0].sourceList[i].index, sources: so })
+            await ep.save((err) => {
+                console.log("Saved episode!")
+            });
+        })
+        //await page.close();
+
+        //await browser.close();
+        console.log(`Execution Time: ${new Date() - start}`);
     }
+
 }

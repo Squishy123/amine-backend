@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
 let SourceSchema = new mongoose.Schema({
-    rapidvideo: String,
+    provider: { type: String, default: "rapidvideo" },
+    player: String,
     url: String,
     quality: {
-        type:[{
+        type: [{
             type: String,
             enum: ["360p", "480p", "720p", "1080p"],
         }], default: ["360p"]
