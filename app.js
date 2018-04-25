@@ -5,7 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
 
-const mongoose = require('mongoose')
+const cors = require('cors');
+
+const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 // database setup
@@ -17,6 +19,9 @@ mongoose.connect("mongodb://localhost:27017/media").then(() => {
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+//enable cors
+app.use(cors())
 
 app.use(logger('dev'));
 app.use(express.json());

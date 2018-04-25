@@ -67,4 +67,19 @@ router.post('/request', (req, res, next) => {
     }
 })
 
+/*
+// post request for /api/renew?title=?
+router.post('/renew', (req, res, next) => {
+    req.data = {title: req.query.title }
+    res.status(200).send('request sent')
+    next();
+}, async (req, res, next) => {
+    //console.log("Next step")
+    if (req.data.siteurl) {
+        await main.scrapeURL(req.data.siteurl);
+    } else if (req.data.title) {
+        // let title = req.param('title')
+    }
+})*/
+
 module.exports = router;
