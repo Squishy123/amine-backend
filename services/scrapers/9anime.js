@@ -23,7 +23,7 @@ module.exports = {
         try {
             await page.waitForSelector('#player > iframe');
         } catch (err) { }
-        let player = page.evaluate(() => {
+        let player = await page.evaluate(() => {
             return document.querySelector('#player > iframe').src;
         })
         return player;
@@ -73,11 +73,11 @@ module.exports = {
         } catch (err) { }
 
         let range = await page.evaluate(() => {
-            return (document.querySelector('#main > div > div.widget.servers > div.widget-body > div:nth-child(1) > div')) ? document.querySelector('#main > div > div.widget.servers > div.widget-body > div:nth-child(1) > div').children.length : 1;
+            let e = document.querySelector('#main > div > div.widget.servers > div.widget-body > div:nth-child(2) > div');
+            return (e) ? e.children.length : 1;
         });
         let sources = await page.evaluate((range) => {
             let sources = [];
-            let servers = document.querySelector('#main > div > div.widget.servers > div.widget-body').children;
             let list;
             for (let r = 1; r <= range; r++) {
                 if (range == 1) {

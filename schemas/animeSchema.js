@@ -38,10 +38,8 @@ AnimeSchema.pre('save', function(next) {
 }**/
 
 AnimeSchema.methods.addEpisode = function addEpisode(episode) {
-    this.episodes.push(episode);
+    this.episodes.push(episode._id);
     console.log("Added Episode")
-    return this;
-    //next();
 }
 
 module.exports = mongoose.model('Anime', AnimeSchema)

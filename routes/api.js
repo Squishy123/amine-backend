@@ -19,32 +19,51 @@ router.get('/', (req, res) => {
     res.status(200).send('Server Online!')
 });
 
-function lookupAnime(req, res, next) {
-
-}
-
-// router for /api/search?title=
-router.get('/search', async(req, res, next) => {
+// router for /api/search/animes?title=
+router.get('/search/animes', async (req, res, next) => {
     let title = req.query.title;
-    await Anime.find({ title: title }, (err, animes) => {
-        if (err) return res.status('500').send({ errors: err });
-        if (animes.length == 0) return res.status(404).send({ errors: 'No Animes Found' })
-        res.json(animes);
-    });
+    if (title)
+        await Anime.find({ title: title }, (err, animes) => {
+            if (err) return res.status('500').send({ errors: err });
+            if (animes.length == 0) return res.status(404).send({ errors: 'No Animes Found' })
+            res.json(animes);
+        });
+    else
+        await Anime.find({}, (err, animes) => {
+            if (err) return res.status('500').send({ errors: err });
+            if (animes.length == 0) return res.status(404).send({ errors: 'No Animes Found' })
+            res.json(animes);
+        });
 })
-
+// router for /api/search/episodes?objectid=
+router.get('/search/episodes', async (req, res, next) => {
+    let objectid = req.query.objectid;
+    if (objectid)
+        await Episode.find({ _id: objectid }, (err, e) => {
+            if (err) return res.status('500').send({ errors: err });
+            if (!e) return res.status(404).send({ errors: 'No Episode Found' })
+            console.log(e);
+            res.json(e);
+        });
+    else
+        await Episode.find({}, (err, episodes) => {
+            if (err) return res.status('500').send({ errors: err });
+            if (episodes.length == 0) return res.status(404).send({ errors: 'No Episodes Found' })
+            res.json(episodes);
+        });
+})
 
 // post request for /api/request?title=?&siteurl=?
 router.post('/request', (req, res, next) => {
-    req.data = {siteurl: req.query.siteurl, title: req.query.title}
+    req.data = { siteurl: req.query.siteurl, title: req.query.title }
     res.status(200).send('request sent')
     next();
-}, async(req, res, next) => {
+}, async (req, res, next) => {
     //console.log("Next step")
     if (req.data.siteurl) {
         await main.scrapeURL(req.data.siteurl);
-    } else if(req.data.title){
-       // let title = req.param('title')
+    } else if (req.data.title) {
+        // let title = req.param('title')
     }
 })
 
