@@ -11,10 +11,10 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 // database setup
-/*
+
 mongoose.connect("mongodb://localhost:27017/media").then(() => {
   console.log("Connection to database successful!")
-}).catch(err => console.log(err))*/
+}).catch(err => console.log(err))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

@@ -61,7 +61,9 @@ router.post('/request', (req, res, next) => {
 }, async (req, res, next) => {
     //console.log("Next step")
     if (req.data.siteurl) {
-        await main.scrapeURL(req.data.siteurl);
+        await main.scrapeURL(req.data.siteurl)
+        next();
+        //res.status(200).send('Finished Scrape!');
     } else if (req.data.title) {
         // let title = req.param('title')
     }

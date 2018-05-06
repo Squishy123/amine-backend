@@ -73,7 +73,7 @@ module.exports = {
         } catch (err) { }
 
         let range = await page.evaluate(() => {
-            let e = document.querySelector('#main > div > div.widget.servers > div.widget-body > div:nth-child(2) > div');
+            let e = document.querySelector('#main > div > div.widget.servers > div.widget-body > div:nth-child(1) > div');
             return (e) ? e.children.length : 1;
         });
         let sources = await page.evaluate((range) => {
@@ -81,10 +81,10 @@ module.exports = {
             let list;
             for (let r = 1; r <= range; r++) {
                 if (range == 1) {
-                    list = document.querySelector(`#main > div > div.widget.servers > div.widget-body > div:nth-child(${2}) > ul`).children;
+                    list = document.querySelector(`#main > div > div.widget.servers > div.widget-body > div:nth-child(${1}) > ul`).children;
                 } else {
 
-                    list = document.querySelector(`#main > div > div.widget.servers > div.widget-body > div:nth-child(${2}) > ul:nth-child(${r + 1})`).children;
+                    list = document.querySelector(`#main > div > div.widget.servers > div.widget-body > div:nth-child(${1}) > ul:nth-child(${r + 1})`).children;
                 }
                 for (let l = 0; l < list.length; l++) {
                     sources.push({ href: list[l].children[0].href, index: list[l].children[0].getAttribute('data-base') });

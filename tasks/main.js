@@ -6,13 +6,15 @@ const scrape = require('../services/scrapers/9anime.js');
 const Anime = require('../schemas/animeSchema.js');
 const Episode = require('../schemas/episodeSchema.js');
 
-const threads = 4;
+const threads = 8;
 
 module.exports = {
     scrapeURL: async (url) => {
+        let start = new Date();
+        /*
         await mongoose.connect("mongodb://localhost:27017/media").then(() => {
             console.log("Connection to database successful!")
-        }).catch(err => console.log(err))
+        }).catch(err => console.log(err))*/
 
         let browser = await puppeteer.launch();
         let page = await browser.newPage();
@@ -50,15 +52,33 @@ module.exports = {
                     console.log("All tasks completed!");
                     (async () => {
                         await browser.close();
-                        await mongoose.disconnect();
+                        //await mongoose.disconnect();
                     })();
+                    console.log(`Execution Completed: ${new Date()-start}ms`);
                 }
 
                 async function package(url, index) {
-                    let p = await browser.newPage();
-                    let player = await scrape.getPlayer(p, url);
-                    let video = await scrape.getVideo(p, `${player}&q=720p`);
-                    let ep = new Episode({ id: index, sources: [{ player: player, quality: "720p", url: video }] })
+                    //  let pages = await Promise.all([browser.newPage(), browser.newPage(), browser.newPage(), browser.newPage()])
+                    //   let player = await scrape.getPlayer(pages[0], url);
+                    /*let videos = await Promise.all([scrape.getVideo(pages[0], `${player}&q=360p`), scrape.getVideo(pages[1], `${player}&q=480p`), scrape.getVideo(pages[2], `${player}&q=720p`), scrape.getVideo(pages[3], `${player}&q=1080p`)])
+                    let sources = [];
+                    if (videos[0])
+                        sources.push({ player: `${player}&q=360p`, quality: "360p", url: videos[0] })
+                    if (videos[1])
+                        sources.push({ player: `${player}&q=480p`, quality: "480p", url: videos[1] })
+                    if (videos[2])
+                        sources.push({ player: `${player}&q=720p`, quality: "720p", url: videos[2] })
+                    if (videos[3])
+                        sources.push({ player: `${player}&q=1080p`, quality: "1080p", url: videos[3] })*/
+                    let page = await browser.newPage();
+                    let player = await scrape.getPlayer(page, url);
+                    let sources = [];
+                    sources.push({ player: `${player}&q=360p`, quality: "360p" })
+                    sources.push({ player: `${player}&q=480p`, quality: "480p" })
+                    sources.push({ player: `${player}&q=720p`, quality: "720p" })
+                    sources.push({ player: `${player}&q=1080p`, quality: "1080p" })
+
+                    let ep = new Episode({ id: index, sources: sources })
                     await ep.save((err) => {
                         if (err) console.log(err);
                         console.log("Saved Episode Successfully!")
@@ -72,7 +92,8 @@ module.exports = {
                         .exec((err, a) => {
                             if (err) console.log(err);
                         })
-                    await p.close();
+                    await page.close();
+                    // await Promise.all([pages[0].close(), pages[1].close(), pages[2].close(), pages[3].close()]);
                 }
 
                 async.each(sources, (s) => {
