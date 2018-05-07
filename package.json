@@ -8,10 +8,12 @@
     "test": "mocha --recursive tests"
   },
   "dependencies": {
+    "@feathersjs/socketio": "^3.2.1",
     "chai": "^4.1.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.16.0",
+    "feathers": "^2.2.4",
     "http-errors": "~1.6.2",
     "mocha": "^5.1.1",
     "mongoose": "^5.0.15",
