@@ -1,6 +1,41 @@
+doctype html
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    block head
+      meta(charset="utf-8")
+      meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+      title  Amine
+      link(rel='stylesheet', href='/stylesheets/style.css')
+      link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+      script(src='/javascripts/jquery-3.3.1.min.js')
+      script(src='/javascripts/bootstrap.min.js')
+
   body
+    block header
+      div(class="container-fluid")
+        nav(class="navbar navbar-expand-lg navbar-dark bg-dark text-white")
+          a(class="navbar-brand" herf="#")
+            h1 Amine
+          button(class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navCollapse" aria-controls="navCollapse" aria-expanded="false" aria-label="Toggle navigation")
+            span(class="navbar-toggler-icon")
+          div(class="collapse navbar-collapse" id="navCollapse")
+            ul(class="navbar-nav mr-auto")
+              li(class="nav-item")
+                h5(class="text-white h4")
+                  a(class="nav-link") Home
+              li(class="nav-item")
+                h5(class="text-white h4")
+                  a(class="nav-link") Browse
+              li(class="nav-item")
+               h5(class="text-white h4")
+                a(class="nav-link") Schedule
+            form(class="form-inline my-2 my-lg-0")
+              input(class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search")
+              button(class="btn btn-outline-success my-2 my-sm-0" type="submit")
+                text Search
     block content
+    block footer
+      div(class="container-fluid foote")
+        div(class="row d-flex justify-content-center") 
+          div(class="p-2")
+            p Amine@2018

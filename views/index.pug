@@ -1,5 +1,10 @@
 extends layout
-
 block content
-  h1= title
-  p Welcome to #{title}
+  div(class="container-fluid justify-content-center" style="margin-top: 15px")
+    div(class="jumbotron")
+      h1(class="display-4") Amine Prototype
+      p(class="lead") Welcome to Amine
+  div(class="container" id="browse")
+  block scripts
+    script(src="/javascripts/mal/api.js")
+    script(src="/javascripts/pages/index.js")
