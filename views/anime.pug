@@ -1,0 +1,12 @@
+extends layout
+block content
+  div(class="container-fluid justify-content-center" style="margin-top: 15px")
+    div(class="jumbotron")
+      h1(class="display-4")=title
+  block scripts
+    script(src="/javascripts/mal/api.js")
+    script.
+        (async() => {
+            let meta = await getAnime({id: '#{mal_id}'});
+            console.log(meta);
+        })();

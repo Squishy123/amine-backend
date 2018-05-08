@@ -8,9 +8,11 @@ block content
         label 
             h1 Search Anime
         div(class="input-group mb-3")
-            input(class="form-control" type="text")
+            input(class="form-control" type="text" id="input")
             div(class="input-group-append")
-                button(class="btn btn-success btn-lg") Search
-
+                button(class="btn btn-success btn-lg" onclick="search()") Search
+  block results
+    div(class="container" id="results")
   block scripts
     script(src="/javascripts/mal/api.js")
+    script(src="/javascripts/pages/browse.js")

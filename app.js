@@ -18,14 +18,23 @@ app.use('/', pageRouter);
 
 io.on('connection', (socket) => {
   console.log('Client Connected!')
+  /*
   socket.on('message', (msg) => {
     io.emit('message', msg);
     console.log(`Message: ${msg}`)
-  })
+  })*/
 
   socket.on('disconnect', () => {
     console.log('Client Disconnected!');
   })
+})
+
+let api = io.of('/api');
+api.on('connection', (socket) =>{
+  socket.on('search: query', (query) => {
+    console.log(query)
+    api.emit('search: result', `Query: ${query} received!`)
+  });
 })
 
 http.listen(3000, function(){
