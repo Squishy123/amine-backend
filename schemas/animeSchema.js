@@ -32,14 +32,13 @@ AnimeSchema.pre('save', function(next) {
     this.scrapeDate = new Date();
     next();
 })
-
-/**AnimeSchema.methods.editThis = function editThis(obj) {
-    this = obj;
-}**/
-
-AnimeSchema.methods.addEpisode = function addEpisode(episode) {
-    this.episodes.push(episode._id);
-    console.log("Added Episode")
+/**
+ * Find an anime by title
+ * @param {String} title 
+ * @param {Function} cb 
+ */
+AnimeSchema.statics.findByTitle = function(title, cb) {
+    return this.find({title: new RegExp(title, 'i')}, cb);
 }
 
 module.exports = mongoose.model('Anime', AnimeSchema)

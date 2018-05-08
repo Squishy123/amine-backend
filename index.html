@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Client</title>
+</head>
+
+<body>
+    <ul id="msgs"></ul>
+    <input id="in" type="text" placeholder="Message">
+    <button id="req" type="button" onclick="sendReq()">Send Request</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.slim.js" integrity="sha256-TjKvu34orT4v6tdwMFrmvqieKl/Rdep7T8hVq57FmEk="
+        crossorigin="anonymous"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+
+        socket.on('message', (msg) => {
+            document.querySelector('#msgs').innerHTML += `<li>${msg}</li>`;
+        })
+
+        function sendReq() {
+            let input = document.querySelector('#in');
+            socket.emit('message', input.value);
+            input.value = "";
+        }
+    </script>
+</body>
+</html>

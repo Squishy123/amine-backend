@@ -1,0 +1,20 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.footer {
+  position: fixed;
+    height: 100px;
+    bottom: 0;
+    width: 100%;
+}
+
+.animeItem {
+  height: 20rem;
+  margin: 10px;
+}
+

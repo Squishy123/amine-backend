@@ -1,9 +1,8 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var app = express();
+const app = require('express')();
+const express = require('express');
+const http = require('http').Server(app);
+const path = require('path');
+const io = require('socket.io')(http);
 
 const cors = require('cors');
 
@@ -20,35 +19,36 @@ mongoose.connect("mongodb://localhost:27017/media").then(() => {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-//enable cors
-app.use(cors())
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+//add public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-//routers
-let api = require('./routes/api.js')
-app.use('/api', api)
+//setup page routes
+const pageRouter = require('./routes/pageRouter');
+app.use('/', pageRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
+
+io.on('connection', (socket) => {
+  console.log('Client Connected!')
+  /*
+  socket.on('message', (msg) => {
+    io.emit('message', msg);
+    console.log(`Message: ${msg}`)
+  })*/
+
+  socket.on('disconnect', () => {
+    console.log('Client Disconnected!');
+  })
+})
+
+let api = io.of('/api');
+api.on('connection', (socket) =>{
+  socket.on('search: query', (query) => {
+    console.log(query)
+    api.emit('search: result', `Query: ${query} received!`)
+  });
+})
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
 });
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-
-
-module.exports = app;
+    

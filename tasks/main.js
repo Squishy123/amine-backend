@@ -3,6 +3,13 @@ const mongoose = require('mongoose');
 const puppeteer = require('puppeteer');
 const scrape = require('../services/scrapers/9anime.js');
 
+//scrapers
+const anime = require('../services/scrapers/9anime.js');
+
+//database
+const db = require('../services/database.js');
+
+//schemas
 const Anime = require('../schemas/animeSchema.js');
 const Episode = require('../schemas/episodeSchema.js');
 
