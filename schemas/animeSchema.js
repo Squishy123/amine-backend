@@ -7,7 +7,7 @@ let AnimeSchema = new mongoose.Schema({
     title: String,
     english: String,
     synonyms: [String],
-    episodes: [Episode.schema],
+    episodes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Episode'}],
     score: { type: Number, min: 0, max: 10 },
     type: {
         type: [{
@@ -32,7 +32,6 @@ AnimeSchema.pre('save', function(next) {
     this.scrapeDate = new Date();
     next();
 })
-
 /**
  * Find an anime by title
  * @param {String} title 

@@ -6,7 +6,7 @@ let EpisodeSchema = new mongoose.Schema({
     title: String,
     english: String,
     duration: Number,
-    sources: [Source.schema],
+    sources: [{player: String, url: String, quality: String}],
 })
 
 module.exports = mongoose.model('Episode', EpisodeSchema)

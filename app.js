@@ -4,6 +4,17 @@ const http = require('http').Server(app);
 const path = require('path');
 const io = require('socket.io')(http);
 
+const cors = require('cors');
+
+const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+
+// database setup
+
+mongoose.connect("mongodb://localhost:27017/media").then(() => {
+  console.log("Connection to database successful!")
+}).catch(err => console.log(err))
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
