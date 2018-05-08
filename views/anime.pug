@@ -2,11 +2,17 @@ extends layout
 block content
   div(class="container-fluid justify-content-center" style="margin-top: 15px")
     div(class="jumbotron")
-      h1(class="display-4")=title
+      div(class="row")
+        div(class="col-md-6")
+          h1(class="display-4")=title
+          p(class="lead-4" id="description")
+        div(class="col-md-6")
+          img(class="img-fluid rounded mx-auto d-block" id="poster" alt="Poster Art")
   block scripts
     script(src="/javascripts/mal/api.js")
     script.
         (async() => {
             let meta = await getAnime({id: '#{mal_id}'});
-            console.log(meta);
+            document.querySelector('#description').innerHTML = meta.synopsis;
+            document.querySelector('#poster').src = meta.image_url;
         })();

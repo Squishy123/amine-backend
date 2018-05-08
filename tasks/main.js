@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const mongoose = require('mongoose');
 
 //scrapers
-const anime = require('../services/9anime.js');
+const anime = require('../services/scrapers/9anime.js');
 
 //database
 const db = require('../services/database.js');
