@@ -13,7 +13,11 @@
             col.className = "col-md-3";
             let card = document.createElement('div');
             card.className = "card animeItem";
-            card.innerHTML = `<img class="card-img-top" src="${e.image_url}" alt="Poster"><div class="card-body"><h5 class="card-title">${e.title}</h5></div>`;
+            card.innerHTML = `<img class="card-img-top" src="${e.image_url}" alt="Poster">
+            <div class="card-body">
+            <h5 class="card-title">${e.title}</h5>
+            <a href="#" class="btn btn-primary">Watch Now</a>
+            </div>`;
             col.appendChild(card);
             row.appendChild(col);
         });
