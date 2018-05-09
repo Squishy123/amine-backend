@@ -36,10 +36,10 @@ block content
         const api = io('http://localhost:3000/api');
 
         function request() {
-          console.log('request sent')
+          document.querySelector('#alerts').innerHTML += `<div class="alert alert-primary alert-dismissible fade show" role="alert">Scrape Request Sent!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
           api.on('request/anime:done', () => {
-            console.log("All Done! Refresh the page now!");
-          })
+            document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Completed Scrape! Added to Database!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+          });
           api.emit('request/anime', {title: '#{title}'});
         }
 
@@ -47,6 +47,9 @@ block content
           if(res) {
             let episodeList = document.querySelector('#episodeList');
             let episodes = new WArray(res[0].episodes.length, () => {
+              episodes.sort((a, b) => {
+                return a[0].id - b[0].id;
+              });
               for(let i = 0; i < episodes.length; i+=6) {
                 let row = document.createElement('div');
                 row.className = "row";

@@ -1,0 +1,28 @@
+extends layout
+block content
+  div(class="container-fluid justify-content-center" style="margin-top: 15px")
+    div(class="jumbotron")
+      h1(class="display-4") Amine Prototype
+      p(class="lead") Welcome to Amine
+    div(class="container")
+        label 
+            h1 Request Scrape
+        div(class="input-group mb-3")
+            input(class="form-control" type="text" placeholder="9anime URL" id="input")
+            div(class="input-group-append")
+                button(class="btn btn-success btn-lg" onclick="scrape()") Scrape
+  block results
+    div(class="container" id="results")
+  block scripts
+    script(src="/javascripts/mal/api.js")
+    script.
+        const api = io('http://localhost:3000/api');
+        function scrape() {
+          let inp = document.querySelector('#input');
+          document.querySelector('#alerts').innerHTML += `<div class="alert alert-primary alert-dismissible fade show" role="alert">Scrape Request Sent!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+          api.on('request/animeURL:done', () => {
+            document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Completed Scrape! Added to Database!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+          });
+          api.emit('request/animeURL', {url: inp.value});
+          inp.value = "";
+        }

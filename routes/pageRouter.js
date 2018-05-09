@@ -9,6 +9,10 @@ router.get('/browse', (req, res) => {
     res.render('browse', {})
 });
 
+router.get('/request', (req, res) => {
+    res.render('request', {})
+});
+
 router.get('/animes/:mal_id/:title', (req, res) => {
     res.render('anime', req.params)
 });
