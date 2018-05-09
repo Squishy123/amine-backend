@@ -13,7 +13,7 @@ const db = require('../services/database.js');
 const Anime = require('../schemas/animeSchema.js');
 const Episode = require('../schemas/episodeSchema.js');
 
-const threads = 8;
+const threads = 4;
 
 module.exports = {
     scrapeURL: async (url) => {
