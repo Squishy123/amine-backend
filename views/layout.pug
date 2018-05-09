@@ -15,7 +15,7 @@ html
     block header
       div(class="container-fluid")
         nav(class="navbar navbar-expand-lg navbar-dark bg-dark text-white")
-          a(class="navbar-brand" herf="#")
+          a(class="navbar-brand" herf="/")
             h1 Amine
           button(class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navCollapse" aria-controls="navCollapse" aria-expanded="false" aria-label="Toggle navigation")
             span(class="navbar-toggler-icon")
@@ -27,9 +27,9 @@ html
               li(class="nav-item")
                 h5(class="text-white h4")
                   a(class="nav-link" href="/browse") Browse
-            form(class="form-inline my-2 my-lg-0")
-              input(class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search")
-              button(class="btn btn-outline-success my-2 my-sm-0" type="submit")
+            form(class="form-inline my-2 my-lg-0" )
+              input(class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" disabled)
+              button(class="btn btn-outline-success my-2 my-sm-0" type="submit" disabled)
                 text Search
     block content
     block footer

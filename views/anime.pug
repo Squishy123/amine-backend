@@ -8,11 +8,53 @@ block content
           p(class="lead-4" id="description")
         div(class="col-md-6")
           img(class="img-fluid rounded mx-auto d-block" id="poster" alt="Poster Art")
+  div(class="container justify-content-center")
+    div(class="row")
+      div(class="col-md-6" id="playerCol")
+        h5(class="display-5") Player
+      div(class="col-md-6" id="episodeCol")
+        h5(class="display-5") Episodes
   block scripts
     script(src="/javascripts/mal/api.js")
     script.
+
+        class WArray extends Array {
+          constructor(watchedLength, cb) {
+            super();
+            this.watchedLength = watchedLength;
+            this.cb = cb;
+          }
+          push(e) {
+            super.push(e);
+            if(this.length >= this.watchedLength) this.cb();
+          }
+          }
+
+        const api = io('http://localhost:3000/api');
+
+        api.on('search/animes:result', (res) => {
+          console.log(res);
+          if(res) {
+            let episodes = new WArray(res[0].episodes.length, () => {
+              console.log(episodes)
+            });
+            api.on('search/episode:result', (res) => {
+                episodes.push(res);
+              });
+            res[0].episodes.forEach((id) => {
+              api.emit('search/episode', {_id: id});
+            });
+
+            //console.log(episodes)
+          } else {
+            document.querySelector('#playerCol').innerHTML += `<button class="btn btn-primary">Request</button>`;
+          }
+        });
+
         (async() => {
             let meta = await getAnime({id: '#{mal_id}'});
             document.querySelector('#description').innerHTML = meta.synopsis;
             document.querySelector('#poster').src = meta.image_url;
+
+            api.emit('search/animes', {title: meta.title});
         })();
