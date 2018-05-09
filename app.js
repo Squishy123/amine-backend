@@ -78,6 +78,14 @@ api.on('connection', (socket) => {
           return api.emit('search/episode:result', e);
         });
   });
+
+  socket.on('request/anime', async(query) => {
+    console.log("Requesting!")
+    if(query) {
+      await main.scrapeTitle(query.title);
+      return api.emit('request/anime:done');
+    }
+  })
 });
 
 http.listen(3000, function () {
