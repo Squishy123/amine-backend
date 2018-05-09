@@ -10,14 +10,18 @@ block content
           img(class="img-fluid rounded mx-auto d-block" id="poster" alt="Poster Art")
   div(class="container justify-content-center")
     div(class="row")
-      div(class="col-md-6" id="playerCol")
-        h5(class="display-5") Player
+      div(class="col-md-6 embed-responsive embed-responsive-4by3" id="playerCol")
       div(class="col-md-6" id="episodeCol")
         h5(class="display-5") Episodes
+        div(class="container-fluid" id="episodeList")
   block scripts
     script(src="/javascripts/mal/api.js")
     script.
-
+        function playSRC(url) {
+          document.querySelector('#playerCol').innerHTML = "";
+          document.querySelector('#playerCol').innerHTML = `<iframe class="embed-responsive-item" src="${url}" sandbox allowfullscreen></iframe>`
+        }
+    script.
         class WArray extends Array {
           constructor(watchedLength, cb) {
             super();
@@ -35,8 +39,20 @@ block content
         api.on('search/animes:result', (res) => {
           console.log(res);
           if(res) {
+            let episodeList = document.querySelector('#episodeList');
             let episodes = new WArray(res[0].episodes.length, () => {
-              console.log(episodes)
+              for(let i = 0; i < episodes.length; i+=6) {
+                let row = document.createElement('div');
+                row.className = "row";
+                episodeList.appendChild(row);
+                let eps = episodes.slice(i, i+6);
+                eps.forEach((e, j) => {
+                  let col = document.createElement('div');
+                  col.className = "col-sm-1";
+                  col.innerHTML = `<button class="btn btn-primary btn-ep" onclick=playSRC('${e[0].sources[0].player}')>${i+j}</button>`;
+                  row.appendChild(col);
+                })
+              }
             });
             api.on('search/episode:result', (res) => {
                 episodes.push(res);
