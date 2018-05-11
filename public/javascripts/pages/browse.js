@@ -23,7 +23,7 @@ async function search() {
             col.className = "col-md-3";
             let card = document.createElement('div');
             card.className = "card animeItem";
-            card.innerHTML = `<img class="card-img-top" src="${e.image_url}" alt="Poster">
+            card.innerHTML = `<img class="card-img-top" src="${e.image_url.replace('/r/100x140', '')}" alt="Poster">
             <div class="card-body">
             <h5 class="card-title">${e.title}</h5>
             <a href="/animes/${e.mal_id}/${e.title}" class="btn btn-primary">Watch Now</a>
