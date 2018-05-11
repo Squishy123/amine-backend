@@ -10,9 +10,13 @@ block content
         div(class="input-group mb-3")
             input(class="form-control" type="text" placeholder="Anime Title" id="input")
             div(class="input-group-append")
-                button(class="btn btn-success btn-lg" onclick="search()") Search
+                button(class="btn btn-success btn-lg" onclick=`redirect()`) Search
   block results
     div(class="container" id="results")
   block scripts
     script(src="/javascripts/mal/api.js")
-    script(src="/javascripts/pages/browse.js")
+    script(src="/javascripts/pages/search.js")
+    script.
+      if('#{keyword}') {
+        search('#{keyword}')
+      }

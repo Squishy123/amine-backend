@@ -4,13 +4,16 @@ socket.on('search: result', (res) => {
     document.querySelector('#results').innerHTML += `<p>${res}</p>`
 });
 
-async function search() {
+function redirect() {
     let inp = document.querySelector('#input');
-    let results = document.querySelector('#results');
-    results.innerHTML = ""
+    window.location.href = inp.value;
+}
 
-    let res = await getSearch({query: inp.value, page: 1})
-    inp.value = "";
+async function search(inp) {
+
+
+    let res = await getSearch({ query: inp, page: 1 })
+
 
     for (let i = 0; i < res.result.length; i += 4) {
         //create a new row and append it to container
@@ -32,8 +35,9 @@ async function search() {
             row.appendChild(col);
         });
     }
-    
+
 
     //socket.emit('search: query', inp.value);
 }
+
 

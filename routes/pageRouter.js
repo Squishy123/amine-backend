@@ -5,9 +5,13 @@ router.get('/', (req, res) => {
     res.render('index', {})
 });
 
-router.get('/browse', (req, res) => {
-    res.render('browse', {})
+router.get('/search', (req, res) => {
+    res.render('search', {})
 });
+
+router.get('/search/:keyword', (req, res) => {
+    res.render('search', req.params)
+})
 
 router.get('/request', (req, res) => {
     res.render('request', {})
