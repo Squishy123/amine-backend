@@ -10,11 +10,7 @@ function redirect() {
 }
 
 async function search(inp) {
-
-
     let res = await getSearch({ query: inp, page: 1 })
-
-
     for (let i = 0; i < res.result.length; i += 4) {
         //create a new row and append it to container
         let row = document.createElement('div');
