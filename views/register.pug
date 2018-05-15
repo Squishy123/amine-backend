@@ -23,21 +23,21 @@ block content
                             label() Confirm Password
                             input(type="password" id="passwordConf" class="form-control" placeholder="Enter password" onkeyup="checkMatching()")
                         div(class="form-group-append" id="match")
-                button(class="btn btn-primary" onclick="submit()") Submit
+                button(class="btn btn-primary" type="button" onclick="submitR()") Submit
                 
     block scripts
         script(src="/javascripts/mal/api.js")
         script.
             const acc = (window.location.href.includes('localhost')) ? io('http://localhost:3000/acc') : io('http://76.64.123.119:3000/acc');
-            function submit() {
+            function submitR() {
+                acc.on('register/success', () => {
+                    document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Registration Complete<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+                 });
+                acc.on('register/error', (err) => {
+                    document.querySelector('#alerts').innerHTML += `<div class="alert alert-danger alert-dismissible fade show" role="alert">${err.message}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+                });
                 if(checkMatching()) {
-                    acc.on('register/success', () => {
-                        document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Registration Complete<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
-                    });
-                    acc.on('register/error', () => {
-                        document.querySelector('#alerts').innerHTML += `<div class="alert alert-danger alert-dismissible fade show" role="alert">An Error has occured. Registration cannot be completed.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
-                    });
-                    acc.emit('register', {username: document.querySelector('#username').value, email: document.querySelector('#email').value, password:document.querySelector('#password'), passwordConf: document.querySelector('#passwordConf').value});
+                    acc.emit('register', {username: document.querySelector('#username').value, email: document.querySelector('#email').value, password:document.querySelector('#password').value, passwordConf: document.querySelector('#passwordConf').value});
                 }
             }
             function checkMatching() {

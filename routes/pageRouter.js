@@ -1,6 +1,8 @@
 var express = require('express');
 let router = express.Router();
 
+const Account = require('../schemas/accountSchema.js');
+
 router.get('/', (req, res) => {
     res.render('index', {})
 });
@@ -27,6 +29,17 @@ router.get('/login', (req, res) => {
 
 router.get('/register', (req, res) => {
     res.render('register', {})
+});
+
+router.get('/account', (req, res, next) => {
+    Account.findById(req.session.userId).exec(function(err, user) {
+        if(err) return next(err);
+        if(!user) {
+            return res.render('error', {});
+        } else {
+            return res.render('account', {account: user});
+        }
+    })
 });
 
 module.exports = router;

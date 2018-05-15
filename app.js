@@ -1,11 +1,14 @@
 const app = require('express')();
 const express = require('express');
+const session = require('express-session');
 const http = require('http').Server(app);
 const path = require('path');
 const io = require('socket.io')(http);
 
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
+
+const MongoStore = require('connect-mongo')(session)
 
 //scrapers
 const scraper = require('./services/scrapers/9anime.js');
@@ -33,6 +36,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 const pageRouter = require('./routes/pageRouter');
 app.use('/', pageRouter);
 
+//sessions
+app.use(session({ secret: 'work hard', resave: 'true', saveUninitialized: false, store: new MongoStore({ mongooseConnection: mongoose.connection }) }));
+
 io.on('connection', (socket) => {
   console.log('Client Connected!')
   socket.on('disconnect', () => {
@@ -43,10 +49,12 @@ io.on('connection', (socket) => {
 //Manage login and register routes
 let acc = io.of('/acc');
 acc.on('connection', (socket) => {
+  //register
   socket.on('register', async (query) => {
+    console.log(query)
     if (query.email && query.username && query.password && query.passwordConf) {
       await Account.create(query, (err, user) => {
-        if(err) return acc.emit('register/error', err);
+        if (err) return acc.emit('register/error', err);
         else return acc.emit('register/success')
       });
     }
