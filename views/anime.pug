@@ -9,6 +9,7 @@ block content
         div(class="col-md-6")
           img(class="img-fluid rounded mx-auto d-block" id="poster" alt="Poster Art")
   div(class="container justify-content-center")
+    div(class="row" id="controls")
     div(class="row")
       div(class="col-md-6 embed-responsive embed-responsive-4by3" id="playerCol")
       div(class="col-md-6" id="episodeCol")
@@ -54,7 +55,7 @@ block content
               //console.log(episodes);
               for(let i = 0; i < episodes.length; i+=6) {
                 let row = document.createElement('div');
-                row.className = "row";
+                row.className = "row btn-group";
                 episodeList.appendChild(row);
                 let eps = episodes.slice(i, i+6);
                 eps.forEach((e, j) => {
@@ -74,7 +75,7 @@ block content
 
             console.log(episodes)
           } else {
-            document.querySelector('#playerCol').innerHTML += `<button class="btn btn-primary" onclick=request()>Request</button>`;
+            document.querySelector('#controls').innerHTML += `<button class="btn btn-primary" onclick=request()>Request</button>`;
           }
         });
 

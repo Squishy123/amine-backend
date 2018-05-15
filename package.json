@@ -21,6 +21,7 @@
     "mongoose": "^5.1.1",
     "morgan": "~1.9.0",
     "nodemon": "^1.17.4",
+    "npm": "^6.0.1",
     "pug": "^2.0.3",
     "puppeteer": "^1.4.0",
     "puppeteer-pool": "^1.0.3"

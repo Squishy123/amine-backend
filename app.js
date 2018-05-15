@@ -13,6 +13,7 @@ const main = require('./tasks/main.js')
 
 //schemas
 const Anime = require('./schemas/animeSchema.js');
+const Account = require('./schemas/accountSchema.js');
 const Episode = require('./schemas/episodeSchema.js');
 const Source = require('./schemas/sourceSchema.js');
 
@@ -32,17 +33,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 const pageRouter = require('./routes/pageRouter');
 app.use('/', pageRouter);
 
-
 io.on('connection', (socket) => {
   console.log('Client Connected!')
-  /*
-  socket.on('message', (msg) => {
-    io.emit('message', msg);
-    console.log(`Message: ${msg}`)
-  })*/
-
   socket.on('disconnect', () => {
     console.log('Client Disconnected!');
+  })
+});
+
+//Manage login and register routes
+let acc = io.of('/acc');
+acc.on('connection', (socket) => {
+  socket.on('register', async (query) => {
+    if (query.email && query.username && query.password && query.passwordConf) {
+      await Account.create(query, (err, user) => {
+        if(err) return acc.emit('register/error', err);
+        else return acc.emit('register/success')
+      });
+    }
   })
 })
 
@@ -64,32 +71,32 @@ api.on('connection', (socket) => {
       });
   });
   //searches for an episode
-  socket.on('search/episode', async(query) => {
+  socket.on('search/episode', async (query) => {
     if (query)
-        await Episode.find(query, (err, e) => {
-            if (err) return api.emit('search/episode:result', err)
-            if (!e) return api.emit('search/episode:result', null)
-            return api.emit('search/episode:result', e);
-        });
+      await Episode.find(query, (err, e) => {
+        if (err) return api.emit('search/episode:result', err)
+        if (!e) return api.emit('search/episode:result', null)
+        return api.emit('search/episode:result', e);
+      });
     else
-        await Episode.find({}, (err, episodes) => {
-          if (err) return api.emit('search/episode:result', err)
-          if (!e) return api.emit('search/episode:result', null)
-          return api.emit('search/episode:result', e);
-        });
+      await Episode.find({}, (err, episodes) => {
+        if (err) return api.emit('search/episode:result', err)
+        if (!e) return api.emit('search/episode:result', null)
+        return api.emit('search/episode:result', e);
+      });
   });
 
-  socket.on('request/anime', async(query) => {
+  socket.on('request/anime', async (query) => {
     console.log("Requesting!")
-    if(query) {
+    if (query) {
       await main.scrapeTitle(query.title);
       return api.emit('request/anime:done');
     }
-  })
+  });
 
-  socket.on('request/animeURL', async(query) => {
+  socket.on('request/animeURL', async (query) => {
     console.log("Requesting!")
-    if(query) {
+    if (query) {
       await main.scrapeURL(query.url);
       return api.emit('request/animeURL:done');
     }
