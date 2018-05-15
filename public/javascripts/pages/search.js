@@ -6,7 +6,7 @@ socket.on('search: result', (res) => {
 
 function redirect() {
     let inp = document.querySelector('#input');
-    window.location.href = inp.value;
+    window.location.href = `/search/${inp.value}`;
 }
 
 async function search(inp) {
