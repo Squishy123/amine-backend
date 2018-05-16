@@ -9,7 +9,13 @@ block content
         div(class="col-md-6")
           img(class="img-fluid rounded mx-auto d-block" id="poster" alt="Poster Art")
   div(class="container justify-content-center")
-    div(class="row embed-responsive embed-responsive-4by3" id="player")
+    div(class="row" id="player")
+      div(class="spinner" id="loader")
+        p(class="lead-4") Loading...
+        div(class="rect1")
+        div(class="rect2")
+        div(class="rect3")
+        div(class="rect4")
     div(class="row" id="controls")
       div(class="container-fluid" id="results")
   block scripts
@@ -17,6 +23,7 @@ block content
     script.
         function playSRC(url) {
           document.querySelector('#player').innerHTML = "";
+          document.querySelector('#player').className = 'row embed-responsive embed-responsive-4by3';
           document.querySelector('#player').innerHTML = `<iframe class="embed-responsive-item" src="${url}" sandbox allowfullscreen></iframe>`
         }
     script.
@@ -37,6 +44,9 @@ block content
         const api = (window.location.href.includes('localhost')) ? io('http://localhost:3000/api') : io('http://76.64.123.119:3000/api');
         function init() {
           api.on('request/search:done', (res) => {
+            //remove loader
+            document.querySelector('#player').removeChild(document.querySelector('#loader'));
+
             console.log(res);
             let results = document.querySelector('#results');
             for (let i = 0; i < res[0].length; i += 4) {
@@ -77,16 +87,25 @@ block content
                   return a[0].id - b[0].id;
                 });
                 //console.log(episodes);
-                for(let i = 0; i < episodes.length; i+=6) {
+                for(let i = 0; i < episodes.length; i+=4) {
                   let row = document.createElement('div');
-                  row.className = "row btn-group";
+                  row.className = "btn-group";
                   episodeList.appendChild(row);
-                  let eps = episodes.slice(i, i+6);
+                  let eps = episodes.slice(i, i+4);
                   eps.forEach((e, j) => {
+                    /*
                     let col = document.createElement('div');
                     col.className = "col-sm-1";
                     col.innerHTML = `<button class="btn btn-primary btn-ep" onclick=playSRC('${e[0].sources[0].player}')>${i+j}</button>`;
                     row.appendChild(col);
+                    */
+                    let btn = document.createElement('button');
+                    btn.className = "btn btn-primary btn-ep";
+                    btn.addEventListener('click', () => {
+                      playSRC(e[0].sources[0].player);
+                    });
+                    btn.innerHTML = i+j
+                    row.appendChild(btn);
                   })
                 }
               });
@@ -105,7 +124,7 @@ block content
         function scrapeURL(url) {
           document.querySelector('#alerts').innerHTML += `<div class="alert alert-primary alert-dismissible fade show" role="alert">Scrape Request Sent!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
           api.on('request/animeURL:done', () => {
-            document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Refresh Page! Added to Database!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+            document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Completed Scrape! Added to Database! Refresh the page!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
           });
           api.emit('request/animeURL', {url: url});
         }
