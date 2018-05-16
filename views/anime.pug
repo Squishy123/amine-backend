@@ -38,12 +38,7 @@ block content
         }
 
         const api = (window.location.href.includes('localhost')) ? io('http://localhost:3000/api') : io('http://76.64.123.119:3000/api');
-        function request() {
-          document.querySelector('#alerts').innerHTML += `<div class="alert alert-primary alert-dismissible fade show" role="alert">Scrape Request Sent!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
-          /*
-          api.on('request/anime:done', () => {
-            document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Completed Scrape! Added to Database!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
-          });*/
+        function init() {
           api.on('request/search:done', (res) => {
             console.log(res);
             let results = document.querySelector('#results');
@@ -61,7 +56,7 @@ block content
                     card.innerHTML = `<img class="card-img-top" src="${e.poster}" alt="Poster">
                     <div class="card-body">
                     <h5 class="card-title">${e.title}</h5>
-                    <a onclick="requestURL(${e.href})" class="btn btn-primary text-white">Watch Now</a>
+                    <a onclick='requestURL("${e.title}", "${e.href}")' class="btn btn-primary text-white">Watch Now</a>
                     </div>`;
                     col.appendChild(card);
                     row.appendChild(col);
@@ -70,44 +65,52 @@ block content
           })
           api.emit('request/search', {keyword: '#{title}'});
         }
+        init();
 
-        api.on('search/animes:result', (res) => {
-          if(res) {
-            let episodeList = document.querySelector('#episodeList');
-            let episodes = new WArray(res[0].episodes.length, () => {
-              episodes.sort((a, b) => {
-                return a[0].id - b[0].id;
+        function requestURL(title, href) {
+          api.emit('search/animes', {title: title});
+          api.on('search/animes:result', (res) => {
+            if(res) {
+              let episodeList = document.querySelector('#episodeList');
+              episodeList.innerHTML = "";
+              let episodes = new WArray(res[0].episodes.length, () => {
+                episodes.sort((a, b) => {
+                  return a[0].id - b[0].id;
+                });
+                //console.log(episodes);
+                for(let i = 0; i < episodes.length; i+=6) {
+                  let row = document.createElement('div');
+                  row.className = "row btn-group";
+                  episodeList.appendChild(row);
+                  let eps = episodes.slice(i, i+6);
+                  eps.forEach((e, j) => {
+                    let col = document.createElement('div');
+                    col.className = "col-sm-1";
+                    col.innerHTML = `<button class="btn btn-primary btn-ep" onclick=playSRC('${e[0].sources[0].player}')>${i+j}</button>`;
+                    row.appendChild(col);
+                  })
+                }
               });
-              //console.log(episodes);
-              for(let i = 0; i < episodes.length; i+=6) {
-                let row = document.createElement('div');
-                row.className = "row btn-group";
-                episodeList.appendChild(row);
-                let eps = episodes.slice(i, i+6);
-                eps.forEach((e, j) => {
-                  let col = document.createElement('div');
-                  col.className = "col-sm-1";
-                  col.innerHTML = `<button class="btn btn-primary btn-ep" onclick=playSRC('${e[0].sources[0].player}')>${i+j}</button>`;
-                  row.appendChild(col);
-                })
-              }
-            });
-            api.on('search/episode:result', (res) => {
-              episodes.push(res);
-            });
-            res[0].episodes.forEach((id) => {
-              api.emit('search/episode', {_id: id});
-            });
-            console.log(episodes)
-          } else {
-            document.querySelector('#controls').innerHTML += `<button class="btn btn-primary" onclick=request()>Search</button>`;
-          }
-        });
+              api.on('search/episode:result', (res) => {
+                episodes.push(res);
+              });
+              res[0].episodes.forEach((id) => {
+                api.emit('search/episode', {_id: id});
+              });
+              console.log(episodes)
+            } else {
+              document.querySelector('#controls').insertAdjacentHTML('afterbegin', `<button class="btn btn-primary" onclick=request()>Scrape</button>`);
+            }
+        })
+        }
+
+        /*
+        });*/
 
         (async() => {
             let meta = await getAnime({id: '#{mal_id}'});
             document.querySelector('#description').innerHTML = meta.synopsis;
             document.querySelector('#poster').src = meta.image_url;
 
-            api.emit('search/animes', {title: meta.title});
+            
         })();

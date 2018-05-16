@@ -50,14 +50,6 @@ app.use('/', pageRouter);
 const authRouter = require('./routes/authRouter');
 app.use('/', authRouter);
 
-
-io.on('connection', (socket) => {
-  console.log('Client Connected!')
-  socket.on('disconnect', () => {
-    console.log('Client Disconnected!');
-  })
-});
-
 //Manage login and register routes
 /*
 let acc = io.of('/acc');
@@ -115,11 +107,14 @@ api.on('connection', (socket) => {
     }
   });
 
+  //9anime search results
   socket.on('request/search', async(query) => {
     if(query) {
       let browser = await puppeteer.launch();
       let page = await scrape.initPage(browser);
       let results = await scrape.getSearch(page, query.keyword, 1); 
+      await page.close();
+      await browser.close();
       return api.emit('request/search:done', results);
     }
   });
