@@ -1,5 +1,8 @@
 extends layout
 block content
  div(class="container" style="margin-top: 15px")
-    if account
-        h1=account
+    div(class="row justify-content-center")
+        div(class="col-md-8")
+            if account
+                h4() username: #{account.username}
+                h4() email: #{account.email}

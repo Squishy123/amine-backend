@@ -27,9 +27,7 @@ router.post('/login', (req, res, next) => {
     if (req.body.username && req.body.password) {
         Account.authenticate(req.body, (err, user) => {
             if (err || !user) {
-                let error = new Error('Wrong username or password');
-                error.status = 401;
-                return next(error);
+                return  res.render('error', {message: err.message, status: 401, redirect: {href: '/login', text: 'Login'}})
             }
             req.session.userId = user._id;
             return res.redirect('/account');
