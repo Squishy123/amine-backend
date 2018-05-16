@@ -105,7 +105,7 @@ block content
         function scrapeURL(url) {
           document.querySelector('#alerts').innerHTML += `<div class="alert alert-primary alert-dismissible fade show" role="alert">Scrape Request Sent!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
           api.on('request/animeURL:done', () => {
-            document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Completed Scrape! Added to Database!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+            document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Refresh Page! Added to Database!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
           });
           api.emit('request/animeURL', {url: url});
         }
