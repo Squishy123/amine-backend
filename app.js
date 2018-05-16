@@ -72,30 +72,30 @@ api.on('connection', (socket) => {
   socket.on('search/animes', async (query) => {
     if (query)
       await Anime.find(query, (err, animes) => {
-        if (err) return api.emit('search/animes:result', err)
-        if (animes.length == 0) return api.emit('search/animes:result', null)
-        return api.emit('search/animes:result', animes);
+        if (err) return api.emit(`search/animes:result/${query.title}`, err)
+        if (animes.length == 0) return api.emit(`search/animes:result/${query.title}`, null)
+        return api.emit(`search/animes:result/${query.title}`, animes);
       });
     else
       await Anime.find({}, (err, animes) => {
-        if (err) return api.emit('search/animes:result', err)
-        if (animes.length == 0) return api.emit('search/animes:result', null)
-        return api.emit('search/animes:result', animes);
+        if (err) return api.emit(`search/animes:result/${query.title}`, err)
+        if (animes.length == 0) api.emit(`search/animes:result/${query.title}`, null)
+        return api.emit(`search/animes:result/${query.title}`, animes);
       });
   });
   //searches for an episode
   socket.on('search/episode', async (query) => {
     if (query)
       await Episode.find(query, (err, e) => {
-        if (err) return api.emit('search/episode:result', err)
-        if (!e) return api.emit('search/episode:result', null)
-        return api.emit('search/episode:result', e);
+        if (err) return api.emit(`search/episode:result/${query._id}`, err)
+        if (!e) return api.emit(`search/episode:result/${query._id}`, null)
+        return api.emit(`search/episode:result/${query._id}`, e);
       });
     else
       await Episode.find({}, (err, episodes) => {
-        if (err) return api.emit('search/episode:result', err)
-        if (!e) return api.emit('search/episode:result', null)
-        return api.emit('search/episode:result', e);
+        if (err) return api.emit(`search/episode:result/${query._id}`, err)
+        if (!e) return api.emit(`search/episode:result/${query._id}`, null)
+        return api.emit(`search/episode:result/${query._id}`, e);
       });
   });
 

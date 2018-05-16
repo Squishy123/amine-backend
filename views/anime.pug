@@ -68,7 +68,7 @@ block content
 
         function requestURL(title, href) {
           api.emit('search/animes', {title: title});
-          api.on('search/animes:result', (res) => {
+          api.on(`search/animes:result/${title}`, (res) => {
             if(res) {
               let episodeList = document.querySelector(`[data-title='${title}']`);
               episodeList.innerHTML = "";
@@ -90,10 +90,10 @@ block content
                   })
                 }
               });
-              api.on('search/episode:result', (res) => {
+              res[0].episodes.forEach((id) => {
+                api.on(`search/episode:result/${id}`, (res) => {
                 episodes.push(res);
               });
-              res[0].episodes.forEach((id) => {
                 api.emit('search/episode', {_id: id});
               });
               console.log(episodes)
