@@ -1,0 +1,15 @@
+extends layout
+block content
+ div(class="container" style="margin-top: 15px")
+    div(class="row justify-content-center")
+        div(class="col-md-6")
+           p(class="display-4") Login
+           form(action="/login" method="post")
+                div(class="form-group")
+                    label() Username
+                    input(type="text" name="username" id="username" class="form-control" placeholder="Enter username" required)
+                div(class="form-group")
+                    label() Password
+                    input(type="password" name="password" id="password" class="form-control" placeholder="Enter password" required)
+                    small(class="form-text text-muted") Make sure you choose a good one 
+                button(class="btn btn-primary" type="submit") Submit

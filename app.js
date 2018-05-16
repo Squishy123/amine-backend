@@ -5,6 +5,7 @@ const http = require('http').Server(app);
 const path = require('path');
 const io = require('socket.io')(http);
 
+
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
@@ -29,6 +30,12 @@ mongoose.connect("mongodb://localhost:27017/media").then(() => {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+//body parser
+app.use(require('body-parser')());
+
+//sessions
+app.use(session({ secret: 'work hard', resave: 'true', saveUninitialized: false, store: new MongoStore({ mongooseConnection: mongoose.connection }) }));
+
 //add public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -36,8 +43,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 const pageRouter = require('./routes/pageRouter');
 app.use('/', pageRouter);
 
-//sessions
-app.use(session({ secret: 'work hard', resave: 'true', saveUninitialized: false, store: new MongoStore({ mongooseConnection: mongoose.connection }) }));
+const authRouter = require('./routes/authRouter');
+app.use('/', authRouter);
+
 
 io.on('connection', (socket) => {
   console.log('Client Connected!')
@@ -47,6 +55,7 @@ io.on('connection', (socket) => {
 });
 
 //Manage login and register routes
+/*
 let acc = io.of('/acc');
 acc.on('connection', (socket) => {
   //register
@@ -59,7 +68,7 @@ acc.on('connection', (socket) => {
       });
     }
   })
-})
+})*/
 
 let api = io.of('/api');
 api.on('connection', (socket) => {

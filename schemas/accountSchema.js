@@ -34,21 +34,22 @@ AccountSchema.pre('save', function (next) {
     });
 });
 
-AccountSchema.statics.authenticate = function (email, password, callback) {
-    Account.findOne({ email: email }).exec(function (err, user) {
+AccountSchema.statics.authenticate = function (query, callback) {
+    Account.findOne({username: query.username}).exec(function (err, user) {
         if (err) { return callback(err); }
         else if (!user) {
             let err = new Error('User not found.');
             err.status = 401;
             return callback(err);
         }
-        bcrypt.compare(password, user.password, function (err, result) {
-            if (result) {
-                return callback(null, user)
-                return callback()
-            }
-        })
+        bcrypt.compare(query.password, user.password, function (err, result) {
+            if (result)
+                return callback(null, user);
+            return callback()
+        });
     })
 }
 
-module.exports = mongoose.model('Account', AccountSchema)
+
+let Account = mongoose.model('Account', AccountSchema);
+module.exports = Account;
