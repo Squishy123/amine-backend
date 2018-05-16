@@ -9,18 +9,15 @@ block content
         div(class="col-md-6")
           img(class="img-fluid rounded mx-auto d-block" id="poster" alt="Poster Art")
   div(class="container justify-content-center")
+    div(class="row embed-responsive embed-responsive-4by3" id="player")
     div(class="row" id="controls")
       div(class="container-fluid" id="results")
-    div(class="row")
-      div(class="col-md-6 embed-responsive embed-responsive-4by3" id="playerCol")
-      div(class="col-md-6" id="episodeCol")
-        div(class="container-fluid" id="episodeList")
   block scripts
     script(src="/javascripts/mal/api.js")
     script.
         function playSRC(url) {
-          document.querySelector('#playerCol').innerHTML = "";
-          document.querySelector('#playerCol').innerHTML = `<iframe class="embed-responsive-item" src="${url}" sandbox allowfullscreen></iframe>`
+          document.querySelector('#player').innerHTML = "";
+          document.querySelector('#player').innerHTML = `<iframe class="embed-responsive-item" src="${url}" sandbox allowfullscreen></iframe>`
         }
     script.
         class WArray extends Array {
@@ -53,6 +50,8 @@ block content
                     col.className = "col-md-3";
                     let card = document.createElement('div');
                     card.className = "card animeItem";
+                    card.dataset.title  = e.title;
+                    card.title = e.title;
                     card.innerHTML = `<img class="card-img-top" src="${e.poster}" alt="Poster">
                     <div class="card-body">
                     <h5 class="card-title">${e.title}</h5>
@@ -71,7 +70,7 @@ block content
           api.emit('search/animes', {title: title});
           api.on('search/animes:result', (res) => {
             if(res) {
-              let episodeList = document.querySelector('#episodeList');
+              let episodeList = document.querySelector(`[data-title='${title}']`);
               episodeList.innerHTML = "";
               let episodes = new WArray(res[0].episodes.length, () => {
                 episodes.sort((a, b) => {
@@ -98,10 +97,17 @@ block content
                 api.emit('search/episode', {_id: id});
               });
               console.log(episodes)
-            } else {
-              document.querySelector('#controls').insertAdjacentHTML('afterbegin', `<button class="btn btn-primary" onclick=request()>Scrape</button>`);
-            }
-        })
+            } else  
+              document.querySelector(`[data-title='${title}']`).insertAdjacentHTML('afterbegin', `<button class="btn btn-primary" onclick=scrapeURL('${href}')>Request</button>`);
+          })
+        }
+
+        function scrapeURL(url) {
+          document.querySelector('#alerts').innerHTML += `<div class="alert alert-primary alert-dismissible fade show" role="alert">Scrape Request Sent!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+          api.on('request/animeURL:done', () => {
+            document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Completed Scrape! Added to Database!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+          });
+          api.emit('request/animeURL', {url: url});
         }
 
         /*
