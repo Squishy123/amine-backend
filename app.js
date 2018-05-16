@@ -21,6 +21,10 @@ const Account = require('./schemas/accountSchema.js');
 const Episode = require('./schemas/episodeSchema.js');
 const Source = require('./schemas/sourceSchema.js');
 
+//puppet stuff
+const puppeteer = require('puppeteer');
+const scrape = require('9anime-scraper')
+
 // database setup
 mongoose.connect("mongodb://localhost:27017/media").then(() => {
   console.log("Connection to database successful!")
@@ -108,6 +112,15 @@ api.on('connection', (socket) => {
     if (query) {
       await main.scrapeTitle(query.title);
       return api.emit('request/anime:done');
+    }
+  });
+
+  socket.on('request/search', async(query) => {
+    if(query) {
+      let browser = await puppeteer.launch();
+      let page = await scrape.initPage(browser);
+      let results = await scrape.getSearch(page, query.keyword, 1); 
+      return api.emit('request/search:done', results);
     }
   });
 

@@ -10,6 +10,7 @@ block content
           img(class="img-fluid rounded mx-auto d-block" id="poster" alt="Poster Art")
   div(class="container justify-content-center")
     div(class="row" id="controls")
+      div(class="container-fluid" id="results")
     div(class="row")
       div(class="col-md-6 embed-responsive embed-responsive-4by3" id="playerCol")
       div(class="col-md-6" id="episodeCol")
@@ -39,10 +40,35 @@ block content
         const api = (window.location.href.includes('localhost')) ? io('http://localhost:3000/api') : io('http://76.64.123.119:3000/api');
         function request() {
           document.querySelector('#alerts').innerHTML += `<div class="alert alert-primary alert-dismissible fade show" role="alert">Scrape Request Sent!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
+          /*
           api.on('request/anime:done', () => {
             document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Completed Scrape! Added to Database!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
-          });
-          api.emit('request/anime', {title: '#{title}'});
+          });*/
+          api.on('request/search:done', (res) => {
+            console.log(res);
+            let results = document.querySelector('#results');
+            for (let i = 0; i < res[0].length; i += 4) {
+                //create a new row and append it to container
+                let row = document.createElement('div');
+                row.className = "row";
+                results.appendChild(row);
+                let it = res[0].slice(i, i + 4);
+                it.forEach(e => {
+                    let col = document.createElement('div');
+                    col.className = "col-md-3";
+                    let card = document.createElement('div');
+                    card.className = "card animeItem";
+                    card.innerHTML = `<img class="card-img-top" src="${e.poster}" alt="Poster">
+                    <div class="card-body">
+                    <h5 class="card-title">${e.title}</h5>
+                    <a onclick="requestURL(${e.href})" class="btn btn-primary text-white">Watch Now</a>
+                    </div>`;
+                    col.appendChild(card);
+                    row.appendChild(col);
+                });
+              }
+          })
+          api.emit('request/search', {keyword: '#{title}'});
         }
 
         api.on('search/animes:result', (res) => {
@@ -72,10 +98,9 @@ block content
             res[0].episodes.forEach((id) => {
               api.emit('search/episode', {_id: id});
             });
-
             console.log(episodes)
           } else {
-            document.querySelector('#controls').innerHTML += `<button class="btn btn-primary" onclick=request()>Request</button>`;
+            document.querySelector('#controls').innerHTML += `<button class="btn btn-primary" onclick=request()>Search</button>`;
           }
         });
 
