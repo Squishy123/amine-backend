@@ -25,6 +25,10 @@ const Source = require('./schemas/sourceSchema.js');
 const puppeteer = require('puppeteer');
 const scrape = require('9anime-scraper')
 
+//request stuff
+const cheerio = require('cheerio');
+const request = require('request-promise-native');
+
 // database setup
 mongoose.connect("mongodb://localhost:27017/media").then(() => {
   console.log("Connection to database successful!")
@@ -108,14 +112,29 @@ api.on('connection', (socket) => {
   });
 
   //9anime search results
-  socket.on('request/search', async(query) => {
-    if(query) {
+  socket.on('request/search', async (query) => {
+    if (query) {
+      /*
       let browser = await puppeteer.launch();
       let page = await scrape.initPage(browser);
       let results = await scrape.getSearch(page, query.keyword, 1); 
       await page.close();
-      await browser.close();
-      return api.emit('request/search:done', results);
+      await browser.close();*/
+      await request(`https://www4.9anime.is/search?keyword=${query.keyword}`)
+        .then((html) => {
+          const $ = cheerio.load(html);
+          let results = [];
+          let length = $('#main > div > div:nth-child(1) > div.widget-body > div.film-list').children().length;
+          for (let c = 0; c < length; c++) {
+            if ($(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('href') && $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle'))
+              results.push({
+                poster: "null", //$(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.poster.tooltipstered > img`).attr('src'),
+                href: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('href'),
+                title: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle')
+              });
+          }
+          return api.emit('request/search:done', [results]);
+        });
     }
   });
 
