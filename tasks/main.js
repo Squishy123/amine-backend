@@ -10,15 +10,17 @@ const Episode = require('../schemas/episodeSchema.js');
 const threads = 4;
 
 module.exports = {
-    scrapeURL: async (url) => {
+    scrapeURL: async (url, title) => {
         let start = new Date();
         let browser = await puppeteer.launch();
         let page = await scrape.initPage(browser);
         let sources = await scrape.getSource(page, url);
-
-        let title = await page.evaluate(() => {
-            return document.querySelector('#main > div > div.widget.player > div.widget-title > h1').innerHTML;
-        });
+        
+        if (!title) {
+            let title = await page.evaluate(() => {
+                return document.querySelector('#main > div > div.widget.player > div.widget-title > h1').innerHTML;
+            });
+        }
         await page.close();
 
         await Anime.findOne({ title: title }, (err, a) => {

@@ -10,7 +10,7 @@ block content
           img(class="img-fluid rounded mx-auto d-block" id="poster" alt="Poster Art")
   div(class="container justify-content-center")
     div(class="row" id="player")
-      div(class="spinner" id="loader")
+     div(class="spinner" id="loader")
         p(class="lead-4") Loading...
         div(class="rect1")
         div(class="rect2")
@@ -117,16 +117,16 @@ block content
               });
               console.log(episodes)
             } else  
-              document.querySelector(`[data-title='${title}']`).insertAdjacentHTML('afterbegin', `<button class="btn btn-primary" onclick=scrapeURL('${href}')>Request</button>`);
+              document.querySelector(`[data-title='${title}']`).insertAdjacentHTML('afterbegin', `<button class="btn btn-primary" onclick="scrapeURL('${href}','${title}')">Request</button>`);
           })
         }
 
-        function scrapeURL(url) {
+        function scrapeURL(url, title) {
           document.querySelector('#alerts').innerHTML += `<div class="alert alert-primary alert-dismissible fade show" role="alert">Scrape Request Sent!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
           api.on('request/animeURL:done', () => {
             document.querySelector('#alerts').innerHTML += `<div class="alert alert-success alert-dismissible fade show" role="alert">Completed Scrape! Added to Database! Refresh the page!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`
           });
-          api.emit('request/animeURL', {url: url});
+          api.emit('request/animeURL', {url: url, title: title});
         }
 
         /*

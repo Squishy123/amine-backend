@@ -122,7 +122,7 @@ api.on('connection', (socket) => {
   socket.on('request/animeURL', async (query) => {
     console.log("Requesting!")
     if (query) {
-      await main.scrapeURL(query.url);
+      await main.scrapeURL(query.url, query.title);
       return api.emit('request/animeURL:done');
     }
   })
