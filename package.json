@@ -22,6 +22,7 @@
     "mongoose": "^5.1.1",
     "nodemon": "^1.17.4",
     "npm": "^6.0.1",
+    "proxy-chain": "^0.1.29",
     "pug": "^2.0.3",
     "puppeteer": "^1.4.0",
     "request": "^2.86.0",

@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const puppeteer = require('puppeteer');
 const scrape = require('9anime-scraper')
 
+//proxy
+const proxyChain = require('proxy-chain');
+const proxyList = require('../proxyList.json');
+
 //schemas
 const Anime = require('../schemas/animeSchema.js');
 const Episode = require('../schemas/episodeSchema.js');
@@ -12,10 +16,17 @@ const threads = 4;
 module.exports = {
     scrapeURL: async (url, title) => {
         let start = new Date();
-        let browser = await puppeteer.launch();
-        let page = await scrape.initPage(browser);
-        let sources = await scrape.getSource(page, url);
         
+        //proxy stuff
+        //let proxy = await proxyChain.anonymizeProxy('http://@us1124.nordvpn.com:80');
+        let browser = await puppeteer.launch({headless: false, ignoreHTTPSErrors: true, args: [`--proxy-server=http://${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`] });
+        let page = await scrape.initPage(browser);
+        await page.authenticate({username: 'squishycraft123@gmail.com', password:'12211221'});
+        /*await page.setExtraHTTPHeaders({
+            'Proxy-Authorization': 'Basic ' + Buffer.from('squishycraft123:12211221').toString('base64'),
+        });*/
+        let sources = await scrape.getSource(page, url);
+
         if (!title) {
             let title = await page.evaluate(() => {
                 return document.querySelector('#main > div > div.widget.player > div.widget-title > h1').innerHTML;
@@ -54,6 +65,7 @@ module.exports = {
 
                 async function package(url, index) {
                     let page = await scrape.initPage(browser);
+                    await page.authenticate({ username: 'squishycraft123@gmail.com', password: '12211221' });
                     let player = await scrape.getPlayer(page, url);
                     let sources = [];
                     sources.push({ player: `${player}&q=360p`, quality: "360p" })

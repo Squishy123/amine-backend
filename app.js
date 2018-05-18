@@ -25,9 +25,14 @@ const Source = require('./schemas/sourceSchema.js');
 const puppeteer = require('puppeteer');
 const scrape = require('9anime-scraper')
 
+const proxyList = require('./proxyList.json');
+
 //request stuff
 const cheerio = require('cheerio');
-const request = require('request-promise-native');
+const request = require('request-promise-native').defaults({
+  proxy: `http://squishycraft123@gmail.com:12211221@${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`,
+  strictSSL: false
+});
 
 // database setup
 mongoose.connect("mongodb://localhost:27017/media").then(() => {
@@ -107,7 +112,7 @@ api.on('connection', (socket) => {
     console.log("Requesting!")
     if (query) {
       await main.scrapeTitle(query.title);
-      return api.emit('request/anime:done');
+      return api.emit(`request/anime:done/${query.title}`);
     }
   });
 
@@ -133,7 +138,7 @@ api.on('connection', (socket) => {
                 title: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle')
               });
           }
-          return api.emit('request/search:done', [results]);
+          return api.emit(`request/search:done/${query.keyword}`, [results]);
         });
     }
   });
@@ -142,7 +147,7 @@ api.on('connection', (socket) => {
     console.log("Requesting!")
     if (query) {
       await main.scrapeURL(query.url, query.title);
-      return api.emit('request/animeURL:done');
+      return api.emit(`request/animeURL:done/${query.url}`);
     }
   })
 });
