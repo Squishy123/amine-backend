@@ -125,10 +125,10 @@ api.on('connection', (socket) => {
           const $ = cheerio.load(html);
           let results = [];
           let length = $('#main > div > div:nth-child(1) > div.widget-body > div.film-list').children().length;
-          for (let c = 0; c < length; c++) {
+          for (let c = 1; c <= length; c++) {
             if ($(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('href') && $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle'))
               results.push({
-                poster: "null", //$(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.poster.tooltipstered > img`).attr('src'),
+                poster: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div`).find(`a.poster > img`).attr('src'),
                 href: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('href'),
                 title: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle')
               });
