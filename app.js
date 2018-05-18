@@ -5,6 +5,8 @@ const http = require('http').Server(app);
 const path = require('path');
 const io = require('socket.io')(http);
 
+const async = require('async');
+
 
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
@@ -29,10 +31,7 @@ const proxyList = require('./proxyList.json');
 
 //request stuff
 const cheerio = require('cheerio');
-const request = require('request-promise-native').defaults({
-  proxy: `http://squishycraft123@gmail.com:12211221@${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`,
-  strictSSL: false
-});
+const request = require('request');
 
 // database setup
 mongoose.connect("mongodb://localhost:27017/media").then(() => {
@@ -117,28 +116,34 @@ api.on('connection', (socket) => {
   });
 
   //9anime search results
-  socket.on('request/search', async (query) => {
+  socket.on('request/search', (query) => {
     if (query) {
-      /*
-      let browser = await puppeteer.launch();
-      let page = await scrape.initPage(browser);
-      let results = await scrape.getSearch(page, query.keyword, 1); 
-      await page.close();
-      await browser.close();*/
-      await request(`https://www4.9anime.is/search?keyword=${query.keyword}`)
-        .then((html) => {
-          const $ = cheerio.load(html);
-          let results = [];
-          let length = $('#main > div > div:nth-child(1) > div.widget-body > div.film-list').children().length;
-          for (let c = 1; c <= length; c++) {
-            if ($(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('href') && $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle'))
-              results.push({
-                poster: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div`).find(`a.poster > img`).attr('src'),
-                href: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('href'),
-                title: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle')
-              });
-          }
-          return api.emit(`request/search:done/${query.keyword}`, [results]);
+      async.retry({ times: 100 },
+        (cb, results) => {
+          console.log("Tunnelling")
+          let p = `http://squishycraft123@gmail.com:12211221@${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`;
+          let r = request.defaults(p);
+          console.log(p);
+          r(`https://www4.9anime.is/search?keyword=${query.keyword}`, (err, res, body) => {
+            if (!err) {
+              const $ = cheerio.load(body);
+              let results = [];
+              let length = $('#main > div > div:nth-child(1) > div.widget-body > div.film-list').children().length;
+              for (let c = 1; c <= length; c++) {
+                if ($(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('href') && $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle'))
+                  results.push({
+                    poster: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div`).find(`a.poster > img`).attr('src'),
+                    href: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('href'),
+                    title: $(`#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(${c}) > div > a.name`).attr('data-jtitle')
+                  });
+              }
+              return api.emit(`request/search:done/${query.keyword}`, [results]);
+            }else {
+              cb(new Error(`Tunnel Failed: ${p}`))
+            }
+          });
+        }, (err, res) => {
+          console.log(err);
         });
     }
   });

@@ -1,4 +1,5 @@
-const async = require('async')
+const async = require('async');
+const retry = require('async-retry');
 const mongoose = require('mongoose');
 const puppeteer = require('puppeteer');
 const scrape = require('9anime-scraper')
@@ -16,17 +17,19 @@ const threads = 4;
 module.exports = {
     scrapeURL: async (url, title) => {
         let start = new Date();
-        
+        let browser, page, sources;
         //proxy stuff
         //let proxy = await proxyChain.anonymizeProxy('http://@us1124.nordvpn.com:80');
-        let browser = await puppeteer.launch({headless: false, ignoreHTTPSErrors: true, args: [`--proxy-server=http://${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`] });
-        let page = await scrape.initPage(browser);
-        await page.authenticate({username: 'squishycraft123@gmail.com', password:'12211221'});
-        /*await page.setExtraHTTPHeaders({
-            'Proxy-Authorization': 'Basic ' + Buffer.from('squishycraft123:12211221').toString('base64'),
-        });*/
-        let sources = await scrape.getSource(page, url);
-
+        await retry(async() => {
+            browser = await puppeteer.launch({headless: true, ignoreHTTPSErrors: true, args: [`--proxy-server=http://${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`] });
+            page = await scrape.initPage(browser);
+            await page.authenticate({username: 'squishycraft123@gmail.com', password:'12211221'});
+            /*await page.setExtraHTTPHeaders({
+                'Proxy-Authorization': 'Basic ' + Buffer.from('squishycraft123:12211221').toString('base64'),
+            });*/
+            sources = await scrape.getSource(page, url);
+        }, {retries: 100});
+        
         if (!title) {
             let title = await page.evaluate(() => {
                 return document.querySelector('#main > div > div.widget.player > div.widget-title > h1').innerHTML;
