@@ -19,7 +19,7 @@ block content
     div(class="row" id="controls")
       div(class="container-fluid" id="results")
   block scripts
-    script(src="/javascripts/mal/api.js")
+    script(src="/javascripts/kitsu/api.js")
     script.
         function playSRC(url) {
           document.querySelector('#player').innerHTML = "";
@@ -41,7 +41,7 @@ block content
           }
         }
 
-        const api = (window.location.href.includes('localhost')) ? io('http://localhost:3000/api') : io('http://76.64.123.119:3000/api');
+        const api = (window.location.href.includes('localhost')) ? io('http://localhost/api') : (window.location.href.includes('192.168.2.42')) ? io('http://192.168.2.42/api') : io('http://protoamine.tk/api');
         function init() {
           api.on(`request/search:done/#{title}`, (res) => {
             //remove loader
@@ -102,9 +102,10 @@ block content
                     let btn = document.createElement('button');
                     btn.className = "btn btn-primary btn-ep";
                     btn.addEventListener('click', () => {
+                      btn.className = "btn btn-info btn-ep"
                       playSRC(e[0].sources[0].player);
                     });
-                    btn.innerHTML = i+j
+                    btn.innerHTML = i+j + 1;
                     row.appendChild(btn);
                   })
                 }
@@ -134,8 +135,6 @@ block content
 
         (async() => {
             let meta = await getAnime({id: '#{mal_id}'});
-            document.querySelector('#description').innerHTML = meta.synopsis;
-            document.querySelector('#poster').src = meta.image_url;
-
-            
+            document.querySelector('#description').innerHTML = meta.data.attributes.synopsis;
+            document.querySelector('#poster').src = meta.data.attributes.posterImage.medium;
         })();

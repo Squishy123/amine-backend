@@ -28,6 +28,7 @@ const puppeteer = require('puppeteer');
 const scrape = require('9anime-scraper')
 
 const proxyList = require('./proxyList.json');
+const proxySettings = require('./proxySettings.json');
 
 //request stuff
 const cheerio = require('cheerio');
@@ -121,7 +122,7 @@ api.on('connection', (socket) => {
       async.retry({ times: 100 },
         (cb, results) => {
           console.log("Tunnelling")
-          let p = `http://squishycraft123@gmail.com:12211221@${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`;
+          let p = `http://${proxySettings.username}:${proxySettings.password}@${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`;
           let r = request.defaults(p);
           console.log(p);
           r(`https://www4.9anime.is/search?keyword=${query.keyword}`, (err, res, body) => {

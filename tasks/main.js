@@ -7,6 +7,7 @@ const scrape = require('9anime-scraper')
 //proxy
 const proxyChain = require('proxy-chain');
 const proxyList = require('../proxyList.json');
+const proxySettings = require('../proxySettings.json')
 
 //schemas
 const Anime = require('../schemas/animeSchema.js');
@@ -23,11 +24,12 @@ module.exports = {
         await retry(async() => {
             browser = await puppeteer.launch({headless: true, ignoreHTTPSErrors: true, args: [`--proxy-server=http://${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`] });
             page = await scrape.initPage(browser);
-            await page.authenticate({username: 'squishycraft123@gmail.com', password:'12211221'});
+            await page.authenticate({username: proxySettings.username, password: proxySettings.password});
             /*await page.setExtraHTTPHeaders({
                 'Proxy-Authorization': 'Basic ' + Buffer.from('squishycraft123:12211221').toString('base64'),
             });*/
             sources = await scrape.getSource(page, url);
+            console.log(sources);
         }, {retries: 100});
         
         if (!title) {
@@ -68,7 +70,7 @@ module.exports = {
 
                 async function package(url, index) {
                     let page = await scrape.initPage(browser);
-                    await page.authenticate({ username: 'squishycraft123@gmail.com', password: '12211221' });
+                    await page.authenticate({ username: 'peter@packp.net', password: 'gnawwang' });
                     let player = await scrape.getPlayer(page, url);
                     let sources = [];
                     sources.push({ player: `${player}&q=360p`, quality: "360p" })
