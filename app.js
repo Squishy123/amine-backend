@@ -125,7 +125,7 @@ api.on('connection', (socket) => {
           let p = `http://${proxySettings.username}:${proxySettings.password}@${proxyList[Math.floor(Math.random() * Math.floor(proxyList.length))]}:80`;
           let r = request.defaults(p);
           console.log(p);
-          r(`https://www4.9anime.is/search?keyword=${query.keyword}`, (err, res, body) => {
+          r(`https://www5.9anime.is/search?keyword=${query.keyword}`, (err, res, body) => {
             if (!err) {
               const $ = cheerio.load(body);
               let results = [];
@@ -140,6 +140,7 @@ api.on('connection', (socket) => {
               }
               return api.emit(`request/search:done/${query.keyword}`, [results]);
             }else {
+              console.log("Tunnel Failed!")
               cb(new Error(`Tunnel Failed: ${p}`))
             }
           });

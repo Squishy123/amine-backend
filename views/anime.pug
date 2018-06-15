@@ -42,12 +42,34 @@ block content
         }
 
         const api = (window.location.href.includes('localhost')) ? io('http://localhost/api') : (window.location.href.includes('192.168.2.42')) ? io('http://192.168.2.42/api') : io('http://protoamine.tk/api');
+        let origin = api.on;
+        let listenerCount = [];
+        api.on = function(eventName, listener) {
+          //if(eventName.includes('search/animes:result')) {
+            /*
+            let i = listenerCount.findIndex((e) => {
+              return e.eventName == eventName;
+            });
+            if(i == -1) {
+              listenerCount.push({eventName: eventName, count: 1});
+              //console.log("Called!")
+              return origin.call(this, eventName, listener);
+            } else {*/
+              api.off(eventName);
+              origin.call(this, eventName, listener);
+              return this;
+            //}
+
+          //return origin.call(this, eventName, listener);
+
+        }
+        
         function init() {
           api.on(`request/search:done/#{title}`, (res) => {
             //remove loader
             document.querySelector('#player').removeChild(document.querySelector('#loader'));
 
-            console.log(res);
+            //console.log(res);
             let results = document.querySelector('#results');
             for (let i = 0; i < res[0].length; i += 4) {
                 //create a new row and append it to container
@@ -116,9 +138,11 @@ block content
               });
                 api.emit('search/episode', {_id: id});
               });
-              console.log(episodes)
+              //console.log(episodes)
             } else  
+              if(!document.querySelector(`[data-title='${title}'] > button`)) {
               document.querySelector(`[data-title='${title}']`).insertAdjacentHTML('afterbegin', `<button class="btn btn-primary" onclick="scrapeURL('${href}','${title}')">Request</button>`);
+              }
           })
         }
 

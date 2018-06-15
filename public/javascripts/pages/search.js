@@ -6,6 +6,7 @@ api.on('search: result', (res) => {
 
 function redirect() {
     let inp = document.querySelector('#input');
+    console.log(inp.value);
     window.location.href = `/search/${inp.value}`;
 }
 

@@ -104,7 +104,7 @@ module.exports = {
         let start = new Date();
         let browser = await puppeteer.launch();
         let page = await scrape.initPage(browser);
-        await page.goto(`https://www4.9anime.is/search?keyword=${title}`, { waitUntil: "domcontentloaded" });
+        await page.goto(`https://www5.9anime.is/search?keyword=${title}`, { waitUntil: "domcontentloaded" });
         let url = await page.evaluate(() => {
             return document.querySelector('#main > div > div:nth-child(1) > div.widget-body > div.film-list > div:nth-child(1) > div > a.poster.tooltipstered').href;
         });
